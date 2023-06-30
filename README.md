@@ -41,7 +41,7 @@ npm install gh-pages --save-dev
 在vue.config.js文件中添加以下内容：
 ```
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/your-repo/' : '/'
+  publicPath: '/abnormal-info-system/'
 };
 ```
 4.在终端或命令提示符中，运行以下命令来构建项目，这将生成一个构建好的项目文件夹（通常是dist目录）。
