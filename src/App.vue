@@ -56,8 +56,9 @@
       </Row>
     </Form>
     <div style="display: flex;align-items: center; justify-content: center; width: 1200px; margin-top: 10px;">
-      <Button @click="resetBtn" style="margin-right: 15px;">重置数据</Button>
-      <Button type="primary" @click="generateExceptionReportBtn">生成异常报告</Button>
+      <Button type="primary" style="margin-right: 25px;" @click="handleReport('download')">下载异常报告</Button>
+      <Button type="primary" style="margin-right: 25px;" @click="handleReport('link')">生成异常报告链接地址</Button>
+      <Button @click="resetBtn">重置数据</Button>
     </div>
   </div>
 </template>
@@ -120,8 +121,8 @@ export default {
     resetBtn() {
       this.$refs['pageParams'].resetFields();
     },
-    // 生成异常报告
-    generateExceptionReportBtn() {
+    // 异常报告的处理
+    handleReport(type) {
       let v = this;
       let obj = {
         system: '所在系统：',
@@ -156,12 +157,17 @@ export default {
             }
             text += obj[key] + val + '\n' + '\n';
           }
-
           const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
-          let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-          let name = `错误报告-${timer}`;
-          saveAs(blob, `${name}.txt`);
-          v.$Message.success('生成成功！');
+          if (type === 'download') {
+            let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            let name = `错误报告-${timer}`;
+            saveAs(blob, `${name}.txt`);
+            v.$Message.success('下载成功！');
+          } else {
+            const url = URL.createObjectURL(blob);
+            // 在新窗口中打开展示报错信息
+            window.open(url, '_blank');
+          }
         }
       });
     }
