@@ -55,6 +55,6 @@ npx gh-pages -d dist
 6.等待部署完成。一旦部署命令执行完成，你的Vue项目将被部署到GitHub Pages上。
 你可以在浏览器中访问你的GitHub Pages URL来查看部署的应用程序。
 请注意，GitHub Pages部署可能需要一些时间进行生效，特别是在第一次部署时。
-确保你的仓库设置中将GitHub Pages的源设置为master分支。（Vue 2项目代码在master分支中，就请确保"Source"选项设置为master branch）
+确保你的仓库设置中将GitHub Pages的源设置为gh-pages分支。
 
 **`注意：在上述`README.md`示例中，需要将`yourusername`和`your-repo`替换为你的GitHub用户名和项目仓库名称。另外，确保你的Vue项目中有一个名为`vue.config.js`的文件，并按照示例配置了`publicPath`。`**
