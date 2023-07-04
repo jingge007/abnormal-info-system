@@ -155,7 +155,7 @@ export default {
             } else {
               val = v.pageParams[key];
             }
-            text += obj[key] + val + '\n' + '\n';
+            text += obj[key] + val + '\r\n' + '\r\n';
           }
           const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
           if (type === 'download') {
