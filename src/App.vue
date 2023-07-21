@@ -48,7 +48,7 @@
             <Input
                 size="large"
                 type="textarea"
-                :autosize="{ minRows: 20, maxRows: 24}"
+                :autosize="{ minRows: 20, maxRows: 22}"
                 v-model.trim="pageParams.errorMessage">
             </Input>
           </FormItem>
@@ -73,9 +73,9 @@ export default {
       itemCol: 24,
       threeItemCol: 8,
       pageParams: {
-        system: null,
-        systemEnvironment: null,
-        method: null,
+        system: 'yms',
+        systemEnvironment: 'dev',
+        method: 'post',
         errorReportingInterface: '',
         enteringGinseng: '',
         errorMessage: ''
