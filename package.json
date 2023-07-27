@@ -13,13 +13,17 @@
     "file-saver": "^2.0.5",
     "moment": "^2.29.4",
     "view-design": "^4.7.0",
-    "vue": "^2.6.14"
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.1",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "gh-pages": "^5.0.0",
+    "less": "^4.0.0",
+    "less-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.14"
   },
   "browserslist": [
