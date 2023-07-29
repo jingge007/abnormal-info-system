@@ -26,30 +26,30 @@
         <Col :span="itemCol">
           <FormItem label="报错接口：" prop="errorReportingInterface">
             <Input
-                type="textarea"
-                size="large"
-                :autosize="{ minRows: 2, maxRows: 4}"
-                v-model.trim="pageParams.errorReportingInterface">
+              type="textarea"
+              size="large"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              v-model.trim="pageParams.errorReportingInterface">
             </Input>
           </FormItem>
         </Col>
         <Col :span="itemCol">
           <FormItem label="入參：" prop="enteringGinseng">
             <Input
-                type="textarea"
-                size="large"
-                :autosize="{ minRows: 4, maxRows: 8}"
-                v-model.trim="pageParams.enteringGinseng">
+              type="textarea"
+              size="large"
+              :autosize="{ minRows: 4, maxRows: 8}"
+              v-model.trim="pageParams.enteringGinseng">
             </Input>
           </FormItem>
         </Col>
         <Col :span="itemCol">
           <FormItem label="报错信息：" prop="errorMessage">
             <Input
-                size="large"
-                type="textarea"
-                :autosize="{ minRows: 20, maxRows: 22}"
-                v-model.trim="pageParams.errorMessage">
+              size="large"
+              type="textarea"
+              :autosize="{ minRows: 20, maxRows: 22}"
+              v-model.trim="pageParams.errorMessage">
             </Input>
           </FormItem>
         </Col>
@@ -160,9 +160,10 @@ export default {
           const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
           if (type === 'download') {
             let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            let name = `错误报告-${timer}`;
-            saveAs(blob, `${name}.txt`);
-            v.$Message.success('下载成功！');
+            /* let name = `错误报告-${timer}`;
+             saveAs(blob, `${name}.txt`);
+             v.$Message.success('下载成功！');*/
+            v.saveMessageToLeanCloud(timer)
           } else {
             const url = URL.createObjectURL(blob);
             // 在新窗口中打开展示报错信息
@@ -170,12 +171,25 @@ export default {
           }
         }
       });
-    }
+    },
+    //
+    saveMessageToLeanCloud(message) {
+      const Message = this.$leancloud.Object.extend('abnormalList');
+      const newMessage = new Message();
+      newMessage.set('content', message);
+      newMessage.save().then((savedMessage) => {
+          this.$Message.success('保存成功');
+        },
+        (error) => {
+          this.$Message.error(error);
+        }
+      );
+    },
   }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
 #app {
   width: 1200px;
   margin: 30px auto 0;

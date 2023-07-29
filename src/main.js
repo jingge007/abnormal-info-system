@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import viewDesign from 'view-design';
+import leancloud from "@/plugins/leancloud";
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import 'view-design/dist/styles/iview.css';
@@ -12,6 +13,7 @@ const MomentPlugin = {
   },
 };
 Vue.use(MomentPlugin);
+Vue.use(leancloud);
 
 Vue.config.productionTip = false
 Vue.use(viewDesign)
