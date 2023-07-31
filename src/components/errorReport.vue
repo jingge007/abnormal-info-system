@@ -147,6 +147,8 @@ export default {
           padding: 15px;
           font-size: 15px;
           font-weight: normal;
+          word-wrap: break-word;
+          word-break: break-all;
         }
         .setSizeStyle {
           font-size: 17px;
