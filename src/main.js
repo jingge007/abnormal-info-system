@@ -6,6 +6,7 @@ import moment from 'moment';
 import router from "./router"; // 路由
 import 'moment/locale/zh-cn';
 import 'view-design/dist/styles/iview.css';
+import "@/styles/index.less"
 import tools from "@/utils/tools";
 
 moment.locale('zh-cn');

@@ -10,7 +10,14 @@
               <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
             </div>
             <div class="content" v-if="item.paramsValue">
-              <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25"></jsonView>
+              <template v-if="item.isJSON">
+                <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25"></jsonView>
+              </template>
+              <template v-else>
+                <div class="content">
+                  {{ item.paramsValue }}
+                </div>
+              </template>
             </div>
           </div>
         </template>
@@ -20,7 +27,13 @@
               <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
             </div>
             <div class="content" :class="item.paramsKey === 'errorReportingInterface' ? 'setSizeStyle': ''">
-              {{ item.paramsValue }}
+              <template v-if="'errorReportingInterface' === item.paramsKey">
+                <Tag :color="handleStyle('color')" size="large" class="font-size-14 mr10">{{ handleStyle('text') }}</Tag>
+                <span>{{ item.paramsValue }}</span>
+              </template>
+              <template v-else>
+                {{ item.paramsValue }}
+              </template>
             </div>
           </div>
         </template>
@@ -63,6 +76,36 @@ export default {
     this.getErrorData();
   },
   methods: {
+    // 处理样式
+    handleStyle(type) {
+      let text = '';
+      if (Object.keys(this.detailsInfo).length > 0) {
+        let tagObj = {
+          post: {
+            color: 'success',
+            text: 'POST'
+          },
+          get: {
+            color: 'primary',
+            text: 'GET'
+          },
+          put: {
+            color: 'warning',
+            text: 'PUT'
+          },
+          delete: {
+            color: 'error',
+            text: 'DELETE'
+          },
+        }
+        if (type === 'color') {
+          text = tagObj[this.detailsInfo.method].color || '';
+        } else {
+          text = tagObj[this.detailsInfo.method].text || '';
+        }
+      }
+      return text;
+    },
     // 一键复制内容
     copyContentBtn(type) {
       let val = '';
@@ -97,8 +140,9 @@ export default {
                     }
                     item.paramsValue = v.systemObj[val];
                   } else {
-                    if (v.optionskeyList.includes(key)) {
+                    if (v.$tools.isJSON(obj[key])) {
                       item.paramsValue = JSON.parse(obj[key]);
+                      item.isJSON = true;
                     } else {
                       item.paramsValue = obj[key];
                     }
