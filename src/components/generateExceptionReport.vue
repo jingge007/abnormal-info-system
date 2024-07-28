@@ -176,7 +176,7 @@ export default {
               if (origin.includes('localhost')) {
                 path = `http://localhost:8080/abnormal-info-system/#/errorReport?id=${id}`
               } else {
-                path = `https://jingge007.github.io/abnormal-info-system/#/errorReport?id=${id}`
+                path = `https://abnormal.taicisou.cn/abnormal-info-system/#/errorReport?id=${id}`
               }
               v.$tools.copyText(path)
               v.$Message.success('复制成功！');
