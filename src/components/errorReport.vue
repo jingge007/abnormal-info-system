@@ -1,6 +1,7 @@
 <template>
   <div class="errorReport_box">
-    <h1 class="title_box">{{ systemTitle + systemEnvironmentTitle + '异常错误报告' }}</h1>
+    <h1 class="title_box">{{ systemTitle }}</h1>
+    <h2 class="text_box">{{ systemEnvironmentTitle + '异常错误报告'}}</h2>
     <div class="content_box">
       <div class="errorReport_item_box" v-for="item in errorReportList">
         <h2 class="title">{{ item.title }}</h2>
@@ -189,6 +190,15 @@ export default {
     font-weight: bold;
     color: #333;
     padding: 20px 0;
+    text-align: center;
+  }
+
+  .text_box {
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    padding: 10px 0;
     text-align: center;
   }
 
