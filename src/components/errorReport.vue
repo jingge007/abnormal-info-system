@@ -62,12 +62,27 @@ export default {
       ],
       optionskeyList: ['enteringGinseng', 'errorMessage'],
       systemObj: {
-        yms: '运营系统',
-        supplier: '供应商系统',
+        yms: 'yms-运营系统',
+        supplier: 'yms-供应商系统',
         distributor: '分销商系统',
         shopping: '商城',
+
+        vesYms: 'ves-运营系统',
+        vesSupplier: 'ves-供应商系统',
+
+        'tongTool-setting': 'ERP3.0-设置中心',
+        'tongTool-pds': 'ERP3.0-新品开发系统',
+        'tongTool-order': 'ERP3.0-订单处理系统',
+        'tongTool-product': 'ERP3.0-商品管理系统',
+        'tongTool-sps': 'ERP3.0-供应商采购系统',
+        'tongTool-cs': 'ERP3.0-客服管理系统',
+        'tongTool-wms': 'ERP3.0-仓储管理系统',
+        'tongTool-data-center': 'ERP3.0-数据中心',
+
+
         dev: '开发环境',
         test: '测试环境',
+        uat: 'uat环境',
         staging: '生产环境'
       }
     }

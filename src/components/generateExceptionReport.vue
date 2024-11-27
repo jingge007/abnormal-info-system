@@ -99,14 +99,27 @@ export default {
         ]
       },
       systemList: [
-        {name: '运营系统', value: 'yms'},
-        {name: '供应商系统', value: 'supplier'},
+        {name: 'yms-运营系统', value: 'yms'},
+        {name: 'yms-供应商系统', value: 'supplier'},
         {name: '分销商系统', value: 'distributor'},
         {name: '商城', value: 'shopping'},
+
+        {name: 'ves-运营系统', value: 'vesYms'},
+        {name: 'ves-供应商系统', value: 'vesSupplier'},
+
+        {name: 'ERP3.0-设置中心', value: 'tongTool-setting'},
+        {name: 'ERP3.0-新品开发系统', value: 'tongTool-pds'},
+        {name: 'ERP3.0-订单处理系统', value: 'tongTool-order'},
+        {name: 'ERP3.0-商品管理系统', value: 'tongTool-product'},
+        {name: 'ERP3.0-供应商采购系统', value: 'tongTool-sps'},
+        {name: 'ERP3.0-客服管理系统', value: 'tongTool-cs'},
+        {name: 'ERP3.0-仓储管理系统', value: 'tongTool-wms'},
+        {name: 'ERP3.0-数据中心', value: 'tongTool-data-center'},
       ],
       systemEnvironmentList: [
         {name: 'dev环境', value: 'dev'},
         {name: 'test环境', value: 'test'},
+        {name: 'uat环境', value: 'uat'},
         {name: 'staging环境', value: 'staging'}
       ],
       methodList: [
