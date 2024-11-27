@@ -186,10 +186,10 @@ export default {
 
   .title_box {
     width: 100%;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     color: #333;
-    padding: 20px 0;
+    padding: 20px 0 0 0;
     text-align: center;
   }
 
@@ -198,7 +198,7 @@ export default {
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    padding: 10px 0;
+    padding: 8px 0;
     text-align: center;
   }
 
