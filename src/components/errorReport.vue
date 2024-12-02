@@ -1,42 +1,44 @@
 <template>
   <div class="errorReport_box">
     <h1 class="title_box">{{ systemTitle }}</h1>
-    <h2 class="text_box">{{ systemEnvironmentTitle + '异常错误报告'}}</h2>
+    <h2 class="text_box">{{ systemEnvironmentTitle + '异常错误报告' }}</h2>
     <div class="content_box">
       <div class="errorReport_item_box" v-for="item in errorReportList">
-        <h2 class="title">{{ item.title }}</h2>
-        <template v-if="optionskeyList.includes(item.paramsKey)">
-          <div class="content_item_box">
-            <div class="options_box">
-              <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
+        <template v-if="item.paramsValue">
+          <h2 class="title">{{ item.title }}</h2>
+          <template v-if="optionskeyList.includes(item.paramsKey)">
+            <div class="content_item_box">
+              <div class="options_box">
+                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
+              </div>
+              <div class="content" v-if="item.paramsValue">
+                <template v-if="item.isJSON">
+                  <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25"></jsonView>
+                </template>
+                <template v-else>
+                  <div class="content">
+                    {{ item.paramsValue }}
+                  </div>
+                </template>
+              </div>
             </div>
-            <div class="content" v-if="item.paramsValue">
-              <template v-if="item.isJSON">
-                <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25"></jsonView>
-              </template>
-              <template v-else>
-                <div class="content">
+          </template>
+          <template v-else>
+            <div class="content_item_box">
+              <div class="options_box" v-if="['errorReportingInterface'].includes(item.paramsKey)">
+                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
+              </div>
+              <div class="content" :class="item.paramsKey === 'errorReportingInterface' ? 'setSizeStyle': ''">
+                <template v-if="'errorReportingInterface' === item.paramsKey">
+                  <Tag :color="handleStyle('color')" size="large" class="font-size-14 mr10">{{ handleStyle('text') }}</Tag>
+                  <span>{{ item.paramsValue }}</span>
+                </template>
+                <template v-else>
                   {{ item.paramsValue }}
-                </div>
-              </template>
+                </template>
+              </div>
             </div>
-          </div>
-        </template>
-        <template v-else>
-          <div class="content_item_box">
-            <div class="options_box" v-if="['errorReportingInterface'].includes(item.paramsKey)">
-              <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
-            </div>
-            <div class="content" :class="item.paramsKey === 'errorReportingInterface' ? 'setSizeStyle': ''">
-              <template v-if="'errorReportingInterface' === item.paramsKey">
-                <Tag :color="handleStyle('color')" size="large" class="font-size-14 mr10">{{ handleStyle('text') }}</Tag>
-                <span>{{ item.paramsValue }}</span>
-              </template>
-              <template v-else>
-                {{ item.paramsValue }}
-              </template>
-            </div>
-          </div>
+          </template>
         </template>
       </div>
     </div>
