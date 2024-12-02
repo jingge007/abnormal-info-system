@@ -44,6 +44,16 @@
           </FormItem>
         </Col>
         <Col :span="itemCol">
+          <FormItem label="备注：" prop="remarks">
+            <Input
+              type="textarea"
+              size="large"
+              :autosize="{ minRows: 4, maxRows: 8}"
+              v-model.trim="pageParams.remarks">
+            </Input>
+          </FormItem>
+        </Col>
+        <Col :span="itemCol">
           <FormItem label="报错信息：" prop="errorMessage">
             <Input
               size="large"
@@ -79,6 +89,7 @@ export default {
         method: 'post',
         errorReportingInterface: '',
         enteringGinseng: '',
+        remarks: '',
         errorMessage: ''
       },
       ruleValidate: {
@@ -144,6 +155,7 @@ export default {
         method: '请求方式：',
         errorReportingInterface: '报错接口：',
         enteringGinseng: '入參：',
+        remarks: '备注：',
         errorMessage: '报错信息：'
       };
       let selectKeyList = ['system', 'systemEnvironment', 'method'];
@@ -177,7 +189,7 @@ export default {
             let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             let name = `错误报告-${timer}`;
             saveAs(blob, `${name}.txt`);
-          } else if(type ==='link') {
+          } else if (type === 'link') {
             // 在新窗口中打开展示报错信息
             v.generateExceptionReport(v.pageParams);
           }
@@ -201,11 +213,11 @@ export default {
     // 将错误信息保存数据对象到LeanCloud云端
     handleSaveData(pageParams) {
       let v = this;
-      return new Promise((resolve)=> {
+      return new Promise((resolve) => {
         const AbnormalList = v.$leancloud.Object.extend('abnormalList');
         const abnormalList = new AbnormalList();
-        let keyList = ['system', 'systemEnvironment', 'method', 'errorReportingInterface', 'enteringGinseng', 'errorMessage'];
-        for(let key in pageParams) {
+        let keyList = ['system', 'systemEnvironment', 'method', 'errorReportingInterface', 'enteringGinseng', 'remarks', 'errorMessage'];
+        for (let key in pageParams) {
           if (keyList.includes(key)) {
             abnormalList.set(key, pageParams[key]);
           }
@@ -222,16 +234,16 @@ export default {
     generateExceptionReport(pageParams) {
       let v = this;
       v.handleSaveData(pageParams).then((id) => {
-        if(id) {
+        if (id) {
           const {href} = v.$router.resolve({
             path: '/errorReport',
             query: {
               id: id
             }
           });
-          setTimeout(()=> {
+          setTimeout(() => {
             window.open(href, '_blank');
-          },300);
+          }, 300);
         }
       });
     },
