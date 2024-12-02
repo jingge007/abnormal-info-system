@@ -3,8 +3,8 @@
     <h1 class="title_box">{{ systemTitle }}</h1>
     <h2 class="text_box">{{ systemEnvironmentTitle + '异常错误报告' }}</h2>
     <div class="content_box">
-      <div class="errorReport_item_box" v-for="item in errorReportList">
-        <template v-if="item.paramsValue">
+      <template v-for="item in errorReportList">
+        <div class="errorReport_item_box" v-if="item.paramsValue">
           <h2 class="title">{{ item.title }}</h2>
           <template v-if="optionskeyList.includes(item.paramsKey)">
             <div class="content_item_box">
@@ -39,8 +39,8 @@
               </div>
             </div>
           </template>
-        </template>
-      </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
