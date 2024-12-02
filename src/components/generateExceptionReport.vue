@@ -44,7 +44,7 @@
           </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="备注：" prop="remarks">
+          <FormItem label="相关备注：" prop="remarks">
             <Input
               type="textarea"
               size="large"

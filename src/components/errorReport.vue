@@ -59,6 +59,7 @@ export default {
         {title: '系统环境：', paramsKey: 'systemEnvironment', paramsValue: ''},
         {title: '报错接口：', paramsKey: 'errorReportingInterface', paramsValue: ''},
         {title: '接口入參：', paramsKey: 'enteringGinseng', paramsValue: ''},
+        {title: '相关备注：', paramsKey: 'remarks', paramsValue: ''},
         {title: '报错信息：', paramsKey: 'errorMessage', paramsValue: ''},
       ],
       optionskeyList: ['enteringGinseng', 'errorMessage'],
