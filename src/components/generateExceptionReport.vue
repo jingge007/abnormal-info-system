@@ -58,7 +58,7 @@
             <Input
               size="large"
               type="textarea"
-              :autosize="{ minRows: 20, maxRows: 22}"
+              :autosize="{ minRows: 16, maxRows: 18}"
               v-model.trim="pageParams.errorMessage">
             </Input>
           </FormItem>
