@@ -110,13 +110,13 @@ export default {
         ]
       },
       systemList: [
-        {name: 'yms-运营系统', value: 'yms'},
-        {name: 'yms-供应商系统', value: 'supplier'},
-        {name: '分销商系统', value: 'distributor'},
-        {name: '商城', value: 'shopping'},
+        {name: 'YMS-运营系统', value: 'yms'},
+        {name: 'YMS-供应商系统', value: 'supplier'},
+        {name: 'YMS-分销商系统', value: 'distributor'},
+        {name: 'YMS-商城', value: 'shopping'},
 
-        {name: 'ves-运营系统', value: 'vesYms'},
-        {name: 'ves-供应商系统', value: 'vesSupplier'},
+        {name: 'VES-运营系统', value: 'vesYms'},
+        {name: 'VES-供应商系统', value: 'vesSupplier'},
 
         {name: 'ERP3.0-设置中心', value: 'tongTool-setting'},
         {name: 'ERP3.0-新品开发系统', value: 'tongTool-pds'},
