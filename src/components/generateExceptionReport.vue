@@ -38,7 +38,7 @@
             <Input
               type="textarea"
               size="large"
-              :autosize="{ minRows: 3, maxRows: 7}"
+              :autosize="{ minRows: 3, maxRows: 5}"
               v-model.trim="pageParams.enteringGinseng">
             </Input>
           </FormItem>
@@ -48,7 +48,7 @@
             <Input
               type="textarea"
               size="large"
-              :autosize="{ minRows: 3, maxRows: 7}"
+              :autosize="{ minRows: 3, maxRows: 5}"
               v-model.trim="pageParams.remarks">
             </Input>
           </FormItem>
@@ -58,7 +58,7 @@
             <Input
               size="large"
               type="textarea"
-              :autosize="{ minRows: 12, maxRows: 15}"
+              :autosize="{ minRows: 10, maxRows: 14}"
               v-model.trim="pageParams.errorMessage">
             </Input>
           </FormItem>
