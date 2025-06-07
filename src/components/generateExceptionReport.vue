@@ -1,6 +1,6 @@
 <template>
   <div class="generateExceptionReport_box">
-    <Form ref="pageParams" :model="pageParams" :label-width="100" :rules="ruleValidate">
+    <Form ref="pageParams" :model="pageParams" :label-width="120" :rules="ruleValidate" @submit.native.prevent>
       <Row type="flex" :gutter="16">
         <Col :span="threeItemCol">
           <FormItem label="所在系统：" prop="system">
@@ -61,6 +61,18 @@
               :autosize="{ minRows: 10, maxRows: 14}"
               v-model.trim="pageParams.errorMessage">
             </Input>
+          </FormItem>
+        </Col>
+        <Col :span="itemCol">
+          <FormItem label="controller转换：" prop="controllerValue">
+            <div style="display: flex; align-items: center;">
+              <Input size="large" v-model.trim="pageParams.controllerValue" @on-enter="enterChange" style="width:45%;"></Input>
+              <div style="display: flex; align-items: center;">
+                <span style="margin-left: 20px; margin-right: 8px;">{{ '转换值：' + conversionValue }}</span>
+                <Icon v-if="conversionValue" title="一键复制内容" size="20" style="cursor: pointer;"
+                  type="md-copy" @click="copyContentBtn(conversionValue, true)"/>
+              </div>
+            </div>
           </FormItem>
         </Col>
       </Row>
@@ -139,11 +151,13 @@ export default {
         {name: 'PUT请求', value: 'put'},
         {name: 'DELETE请求', value: 'delete'},
       ],
+      conversionValue: ''
     }
   },
   methods: {
     // 重置数据
     resetBtn() {
+      this.conversionValue = '';
       this.$refs['pageParams'].resetFields();
     },
     // 异常报告的处理
@@ -247,13 +261,36 @@ export default {
         }
       });
     },
+    // Swagger接口controller转换
+    enterChange() {
+      let value = this.pageParams.controllerValue;
+      this.conversionValue = '';
+      if (value) {
+        // 转换大写为小写并用-连接
+        const result = value.replace(/([A-Z])/g, '-$1').toLowerCase();
+        this.copyContentBtn(result, false);
+        this.$Message.success('已经转换复制成功');
+        this.pageParams.controllerValue = '';
+      } else {
+        this.$Message.warning('请先输入内容！');
+        return false;
+      }
+    },
+    // 复制
+    copyContentBtn(value, val) {
+      this.conversionValue = value;
+      this.$tools.copyText(value)
+      if (val) {
+        this.$Message.success('复制成功！');
+      }
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .generateExceptionReport_box {
-  width: 1200px;
+  width: 1300px;
   margin: 30px auto 0;
 
   .ivu-col .ivu-form-item {
