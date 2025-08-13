@@ -1,5 +1,5 @@
 <template>
-  <Sider hide-trigger collapsible v-model="isCollapsed"
+  <Sider hide-trigger collapsible v-model="localCollapsed"
     :collapsed-width="65" :width="240"
     class="header_box"
     :class="themeType==='light'?'themeLight':'themeDark'">
@@ -9,25 +9,64 @@
       <h2 v-if="!isCollapsed" class="title">工作台</h2>
     </div>
     <!-- 菜单 -->
-    <Menu :theme="theme" ref="side_menu"
-      :class="isCollapsed ? 'menu_style' : ''"
+    <Menu :theme="theme"
       :active-name="activeName"
+      ref="side_menu"
       @on-select="SelectNav"
+      :class="isCollapsed ? 'menu_style' : ''"
       :style="{height: 'calc(100% - 60px)'}">
-      <template v-for="item in submenuList">
-        <Submenu v-if="!item.singlePage && item.children.length" :key="item.name" :name="item.name">
+      <template v-for="(item, index) in submenuList">
+        <!-- 展开且有子菜单 -->
+        <Submenu :name="item.name" :key="index" v-if="!isCollapsed && !item.singlePage">
           <template slot="title">
             <base-icon :name="item.icon" :size="item.icon_size"></base-icon>
             <span class="text">{{ item.title }}</span>
           </template>
-          <MenuItem v-for="child in item.children" :key="child.name" :name="child.name">
-            {{ child.title }}
-          </MenuItem>
+          <MenuItem v-for="(ele, ids) in item.children" :key="ids" :name="ele.name">{{ ele.title }}</MenuItem>
         </Submenu>
-        <MenuItem v-else :name="item.name">
-          <base-icon :name="item.icon" :size="item.icon_size" :color="item.name===activeName?'#2d8cf0':'#666'"></base-icon>
+
+        <!-- 展开但没有子菜单 -->
+        <MenuItem :name="item.name" :key="index" v-if="!isCollapsed && item.singlePage">
+          <base-icon :name="item.icon"
+            :size="item.icon_size"
+            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
           <span class="text">{{ item.title }}</span>
         </MenuItem>
+
+        <!-- 收缩有子菜单，悬浮 Dropdown 展示 -->
+        <Dropdown v-if="isCollapsed && !item.singlePage"
+          :key="index"
+          class="icon_style"
+          transfer-class-name="dropdown_box"
+          @on-click="SelectNav"
+          placement="right">
+          <base-icon :name="item.icon"
+            :size="item.size || 22"
+            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
+          <DropdownMenu slot="list">
+            <DropdownItem v-for="(ele, ids) in item.children"
+              :key="ids"
+              :name="ele.name"
+              :selected="ele.name === activeName">
+              {{ ele.title }}
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+
+        <!-- 收缩无子菜单，悬浮 Dropdown 展示 -->
+        <Dropdown v-if="isCollapsed && item.singlePage"
+          :key="index"
+          class="icon_style"
+          transfer-class-name="dropdown_box"
+          @on-click="SelectNav"
+          placement="right">
+          <base-icon :name="item.icon"
+            :size="item.size || 22"
+            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
+          <DropdownMenu slot="list">
+            <DropdownItem :name="item.name">{{ item.title }}</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </template>
     </Menu>
   </Sider>
@@ -43,16 +82,27 @@ export default {
       theme: 'light',
       head_logo: require("@/assets/images/head_logo.png"),
       activeName: '',
-      isCollapsed: false
+      localCollapsed: this.$store.state.isCollapsed
     };
   },
   computed: {
     submenuList() {
       return this.formatRoutesToMenu(router.options.routes[0].children || []);
+    },
+    isCollapsed: {
+      get() {
+        return this.$store.state.isCollapsed;
+      },
+      set(val) {
+        this.$store.commit('isCollapsed', val);
+      }
     }
   },
+  created() {
+    this.activeName = this.$route.name;
+  },
   methods: {
-    // 递归生成菜单
+    // 递归生成菜单结构
     formatRoutesToMenu(routes) {
       return routes
         .filter(r => !r.meta?.hideInMenu)
@@ -66,26 +116,29 @@ export default {
           children: r.children ? this.formatRoutesToMenu(r.children) : []
         }));
     },
+
+    // 点击菜单跳转
     SelectNav(name) {
       this.activeName = name;
       this.$router.push({name}).catch(() => {
       });
     },
+
+    // 点击 logo 跳转首页
     logoBtn() {
       this.$router.push({path: '/'}).catch(() => {
       });
     }
   },
-  created() {
-    this.activeName = this.$route.name;
-  },
   watch: {
-    isCollapsed() {
+    // 监听侧边栏折叠状态，更新菜单
+    isCollapsed(val) {
+      this.localCollapsed = val;
       this.$nextTick(() => {
         this.$refs.side_menu.updateOpened();
         this.$refs.side_menu.updateActiveName();
       });
-    }
+    },
   }
 };
 </script>
@@ -129,6 +182,14 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .icon_style {
+    margin: 10px 0;
+  }
+
+  .dropdown_box {
+    min-width: 140px;
   }
 }
 </style>

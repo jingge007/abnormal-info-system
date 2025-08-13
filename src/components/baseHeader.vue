@@ -1,7 +1,7 @@
 <template>
   <div class="header_box" :style="headerStyle">
     <div class="header_left">
-      <Icon style="cursor: pointer; margin-right: 40px;" type="md-menu" size="26"></Icon>
+      <Icon style="cursor: pointer; margin-right: 40px;" type="md-menu" size="26" @click="changeMenu"></Icon>
       <Breadcrumb>
         <BreadcrumbItem>工作台</BreadcrumbItem>
         <BreadcrumbItem>{{ $route.meta.title }}</BreadcrumbItem>
@@ -81,6 +81,9 @@ export default {
     };
   },
   computed: {
+    isCollapsed() {
+      return this.$store.state.isCollapsed;
+    },
     headerStyle() {
       let style = {
         left: '65px',
@@ -89,6 +92,10 @@ export default {
       return this.isCollapsed ? style : '';
     }
   },
-  methods: {}
+  methods: {
+    changeMenu() {
+      this.$store.commit('isCollapsed', !this.isCollapsed);
+    }
+  }
 };
 </script>

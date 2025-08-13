@@ -40,7 +40,7 @@ import baseSidebar from "@/components/baseSidebar";
 export default {
   data() {
     return {
-      isCollapsed: false
+
     };
   },
   components: {
