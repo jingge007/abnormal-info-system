@@ -90,10 +90,11 @@
 import {saveAs} from 'file-saver';
 
 export default {
-  name: 'generateExceptionReport_box',
+  name: 'generateExceptionReport',
   data() {
     return {
       itemCol: 24,
+      twoItemCol: 12,
       threeItemCol: 8,
       pageParams: {
         system: 'yms',
@@ -102,7 +103,9 @@ export default {
         errorReportingInterface: '',
         enteringGinseng: '',
         remarks: '',
-        errorMessage: ''
+        errorMessage: '',
+        controllerValue: '',
+        packagedServices: []
       },
       ruleValidate: {
         system: [
@@ -151,7 +154,23 @@ export default {
         {name: 'PUT请求', value: 'put'},
         {name: 'DELETE请求', value: 'delete'},
       ],
-      conversionValue: ''
+      conversionValue: '',
+      packagedServiceList: [
+        {name: 'yms-compiler', value: 'yms-compiler'},
+        {name: 'yms-core-compiler', value: 'yms-core-compiler'},
+        {name: 'yms-core-controller', value: 'yms-core-controller'},
+        {name: 'yms-core-service', value: 'yms-core-service'},
+        {name: 'yms-core-static', value: 'yms-core-static'},
+        {name: 'yms-distributor-compiler', value: 'yms-distributor-compiler'},
+        {name: 'yms-distributor-controller', value: 'yms-distributor-controller'},
+        {name: 'yms-distributor-service', value: 'yms-distributor-service'},
+        {name: 'yms-distributor-static', value: 'yms-distributor-static'},
+        {name: 'yms-shopping-static', value: 'yms-shopping-static'},
+        {name: 'yms-supplier-compiler', value: 'yms-supplier-compiler'},
+        {name: 'yms-supplier-controller', value: 'yms-supplier-controller'},
+        {name: 'yms-supplier-service', value: 'yms-supplier-service'},
+        {name: 'yms-supplier-static', value: 'yms-supplier-static'}
+      ],
     }
   },
   methods: {
@@ -217,8 +236,9 @@ export default {
               } else {
                 path = `https://abnormal-info-system.taicisou.cn/#/errorReport?id=${id}`
               }
-              v.$tools.copyText(path)
-              v.$Message.success('复制成功！');
+              v.$tools.copyText(path).then(() => {
+                v.$Message.success('复制成功！');
+              });
             });
           }
         }
@@ -279,10 +299,9 @@ export default {
     // 复制
     copyContentBtn(value, val) {
       this.conversionValue = value;
-      this.$tools.copyText(value)
-      if (val) {
+      this.$tools.copyText(value).then(() => {
         this.$Message.success('复制成功！');
-      }
+      });
     }
   }
 }

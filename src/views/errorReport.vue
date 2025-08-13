@@ -129,8 +129,9 @@ export default {
       } else {
         val = this.detailsInfo[type];
       }
-      this.$tools.copyText(val)
-      this.$Message.success('复制成功！');
+      this.$tools.copyText(val).then(()=> {
+        this.$Message.success('复制成功！');
+      });
     },
     // 获取错误信息
     getErrorData() {

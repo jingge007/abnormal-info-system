@@ -8,6 +8,7 @@ import 'moment/locale/zh-cn';
 import 'view-design/dist/styles/iview.css';
 import "@/styles/index.less"
 import tools from "@/utils/tools";
+import components from '@/utils/components';
 
 moment.locale('zh-cn');
 const MomentPlugin = {
@@ -16,6 +17,7 @@ const MomentPlugin = {
   },
 };
 Vue.prototype.$tools = tools;
+Vue.use(components);
 Vue.use(MomentPlugin);
 Vue.use(leancloud);
 
