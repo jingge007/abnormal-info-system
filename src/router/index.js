@@ -43,20 +43,6 @@ const routes = [
         }
       },
       {
-        path: '/errorReport',
-        name: 'errorReport',
-        component: () => import('@/views/errorReport'),
-        meta: {
-          title: '异常报告',
-          icon: 'icon-baogao',
-          singlePage: false,
-          icon_size: '18px',
-          size: '23px',
-          hideInMenu: true // 不显示在侧边栏
-        },
-        children: []
-      },
-      {
         path: '/packagedService',
         name: 'packagedService',
         component: () => import('@/views/packagedService'),
@@ -69,7 +55,21 @@ const routes = [
         }
       }
     ]
-  }
+  },
+  {
+    path: '/errorReport',
+    name: 'errorReport',
+    component: () => import('@/views/errorReport'),
+    meta: {
+      title: '异常报告',
+      icon: 'icon-baogao',
+      singlePage: false,
+      icon_size: '18px',
+      size: '23px',
+      hideInMenu: true // 不显示在侧边栏
+    },
+    children: []
+  },
 ];
 
 export default new Router({

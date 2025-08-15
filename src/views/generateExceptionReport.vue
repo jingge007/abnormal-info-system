@@ -4,7 +4,7 @@
       <Row type="flex" :gutter="16">
         <Col :span="threeItemCol">
           <FormItem label="所在系统：" prop="system">
-            <Select v-model="pageParams.system" transfer size="large">
+            <Select v-model="pageParams.system" filterable transfer size="large">
               <Option v-for="item in systemList" :key="item.value" :value="item.value">{{ item.name }}</Option>
             </Select>
           </FormItem>
