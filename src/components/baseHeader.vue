@@ -26,6 +26,7 @@
   background-color: #fff;
   padding: 0 20px;
   box-sizing: border-box;
+  transition: left .2s ease, width .2s ease;
 
   /deep/ .ivu-breadcrumb {
     font-size: 15px;
@@ -35,67 +36,26 @@
     display: flex;
     align-items: center;
   }
-
-  .header_right {
-    display: flex;
-    align-items: center;
-    padding-right: 50px;
-
-    /deep/ .ivu-dropdown-rel {
-      display: flex;
-      align-items: center;
-      height: 60px;
-      margin-left: 20px;
-      cursor: pointer;
-    }
-
-    .header_center {
-      display: flex;
-      align-items: center;
-
-      .header_logo {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        border: 1px solid #f1f1f2;
-        box-shadow: 2px 7px 8px 0 rgba(29, 35, 41, 0.05);
-      }
-
-      .text {
-        margin-left: 15px;
-        font-size: 14px;
-        color: #333;
-      }
-    }
-  }
 }
 </style>
 
-<script type="text/ecmascript-6">
-
-
+<script>
 export default {
-  data() {
-    return {
-
-    };
-  },
   computed: {
     isCollapsed() {
-      return this.$store.state.isCollapsed;
+      return this.$store.state.isCollapsed
     },
     headerStyle() {
-      let style = {
-        left: '65px',
-        width: 'calc(100% - 65px)'
-      };
-      return this.isCollapsed ? style : '';
+      return this.isCollapsed
+        ? { left: '65px', width: 'calc(100% - 65px)' }
+        : { left: '240px', width: 'calc(100% - 240px)' }
     }
   },
   methods: {
     changeMenu() {
-      this.$store.commit('isCollapsed', !this.isCollapsed);
+      this.$store.commit('toggleCollapsed')
     }
   }
-};
+}
 </script>
+

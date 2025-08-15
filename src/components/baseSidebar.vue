@@ -1,70 +1,112 @@
 <template>
-  <Sider hide-trigger collapsible v-model="localCollapsed"
-    :collapsed-width="65" :width="240"
+  <Sider
+    hide-trigger
+    collapsible
     class="header_box"
-    :class="themeType==='light'?'themeLight':'themeDark'">
-    <!-- Logo -->
+    :collapsed-width="65"
+    :width="240"
+    v-model="collapsedProxy"
+    :class="themeType === 'light' ? 'themeLight' : 'themeDark'"
+  >
+    <!-- Logo：展开/收起两种形态 -->
     <div class="logo_box" @click="logoBtn">
       <img :class="isCollapsed ? 'mini_head_logo' : 'head_logo'" :src="head_logo" alt="">
-      <h2 v-if="!isCollapsed" class="title">工作台</h2>
+      <h2 v-if="!isCollapsed" class="title">YMS工作台</h2>
     </div>
+
     <!-- 菜单 -->
-    <Menu :theme="theme"
+    <Menu
+      :theme="theme"
       :active-name="activeName"
       ref="side_menu"
       @on-select="SelectNav"
-      :class="isCollapsed ? 'menu_style' : ''"
-      :style="{height: 'calc(100% - 60px)'}">
+      :style="menuStyle"
+    >
       <template v-for="(item, index) in submenuList">
-        <!-- 展开且有子菜单 -->
-        <Submenu :name="item.name" :key="index" v-if="!isCollapsed && !item.singlePage">
+        <!-- 展开 && 有子菜单 -->
+        <Submenu
+          v-if="!isCollapsed && !item.singlePage"
+          :key="'open-sub-' + index"
+          :name="item.name"
+        >
           <template slot="title">
             <base-icon :name="item.icon" :size="item.icon_size"></base-icon>
             <span class="text">{{ item.title }}</span>
           </template>
-          <MenuItem v-for="(ele, ids) in item.children" :key="ids" :name="ele.name">{{ ele.title }}</MenuItem>
+          <MenuItem
+            v-for="(ele, ids) in item.children"
+            :key="'open-leaf-' + index + '-' + ids"
+            :name="ele.name"
+          >{{ ele.title }}</MenuItem>
         </Submenu>
 
-        <!-- 展开但没有子菜单 -->
-        <MenuItem :name="item.name" :key="index" v-if="!isCollapsed && item.singlePage">
-          <base-icon :name="item.icon"
+        <!-- 展开 && 无子菜单 -->
+        <MenuItem
+          v-if="!isCollapsed && item.singlePage"
+          :key="'open-item-' + index"
+          :name="item.name"
+        >
+          <base-icon
+            :name="item.icon"
             :size="item.icon_size"
-            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
+            :color="item.name === activeName ? '#2d8cf0' : '#666'"
+          />
           <span class="text">{{ item.title }}</span>
         </MenuItem>
 
-        <!-- 收缩有子菜单，悬浮 Dropdown 展示 -->
-        <Dropdown v-if="isCollapsed && !item.singlePage"
-          :key="index"
-          class="icon_style"
+        <!-- 收起 && 有子菜单 -->
+        <Dropdown
+          v-if="isCollapsed && !item.singlePage"
+          :key="'col-sub-' + index"
+          class="icon_wrapper"
           transfer-class-name="dropdown_box"
           @on-click="SelectNav"
-          placement="right">
-          <base-icon :name="item.icon"
-            :size="item.size || 22"
-            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
+          placement="right"
+          trigger="hover"
+        >
+          <div class="icon_inner">
+            <base-icon
+              :name="item.icon"
+              :size="item.size || 22"
+              :color="item.name === activeName ? '#2d8cf0' : '#666'"
+            />
+          </div>
           <DropdownMenu slot="list">
-            <DropdownItem v-for="(ele, ids) in item.children"
-              :key="ids"
+            <DropdownItem
+              v-for="(ele, ids) in item.children"
+              :key="'col-leaf-' + index + '-' + ids"
               :name="ele.name"
-              :selected="ele.name === activeName">
+              :selected="ele.name === activeName"
+            >
               {{ ele.title }}
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
 
-        <!-- 收缩无子菜单，悬浮 Dropdown 展示 -->
-        <Dropdown v-if="isCollapsed && item.singlePage"
-          :key="index"
-          class="icon_style"
+        <!-- 收起 && 无子菜单 -->
+        <Dropdown
+          v-if="isCollapsed && item.singlePage"
+          :key="'col-item-' + index"
+          class="icon_wrapper"
           transfer-class-name="dropdown_box"
           @on-click="SelectNav"
-          placement="right">
-          <base-icon :name="item.icon"
-            :size="item.size || 22"
-            :color="item.name === activeName ? '#2d8cf0' : '#666'"></base-icon>
+          placement="right"
+          trigger="hover"
+        >
+          <div class="icon_inner">
+            <base-icon
+              :name="item.icon"
+              :size="item.size || 22"
+              :color="item.name === activeName ? '#2d8cf0' : '#666'"
+            />
+          </div>
           <DropdownMenu slot="list">
-            <DropdownItem :name="item.name">{{ item.title }}</DropdownItem>
+            <DropdownItem
+              :name="item.name"
+              :selected="item.name === activeName"
+            >
+              {{ item.title }}
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </template>
@@ -81,28 +123,36 @@ export default {
       themeType: 'light',
       theme: 'light',
       head_logo: require("@/assets/images/head_logo.png"),
-      activeName: '',
-      localCollapsed: this.$store.state.isCollapsed
+      activeName: ''
     };
   },
   computed: {
-    submenuList() {
-      return this.formatRoutesToMenu(router.options.routes[0].children || []);
-    },
-    isCollapsed: {
+    collapsedProxy: {
       get() {
         return this.$store.state.isCollapsed;
       },
-      set(val) {
-        this.$store.commit('isCollapsed', val);
+      set(v) {
+        this.$store.commit('setCollapsed', v);
       }
+    },
+    isCollapsed() {
+      return this.$store.state.isCollapsed;
+    },
+    submenuList() {
+      return this.formatRoutesToMenu(router.options.routes[0].children || []);
+    },
+    menuStyle() {
+      return {
+        width: this.isCollapsed ? '65px' : '240px',
+        height: 'calc(100% - 60px)',
+        transition: 'width .2s'
+      };
     }
   },
   created() {
     this.activeName = this.$route.name;
   },
   methods: {
-    // 递归生成菜单结构
     formatRoutesToMenu(routes) {
       return routes
         .filter(r => !r.meta?.hideInMenu)
@@ -116,29 +166,28 @@ export default {
           children: r.children ? this.formatRoutesToMenu(r.children) : []
         }));
     },
-
-    // 点击菜单跳转
     SelectNav(name) {
       this.activeName = name;
       this.$router.push({name}).catch(() => {
       });
     },
-
-    // 点击 logo 跳转首页
     logoBtn() {
       this.$router.push({path: '/'}).catch(() => {
       });
     }
   },
   watch: {
-    // 监听侧边栏折叠状态，更新菜单
-    isCollapsed(val) {
-      this.localCollapsed = val;
+    isCollapsed() {
       this.$nextTick(() => {
-        this.$refs.side_menu.updateOpened();
-        this.$refs.side_menu.updateActiveName();
+        if (this.$refs.side_menu) {
+          this.$refs.side_menu.updateOpened();
+          this.$refs.side_menu.updateActiveName();
+        }
       });
     },
+    '$route.name'(val) {
+      this.activeName = val;
+    }
   }
 };
 </script>
@@ -147,6 +196,7 @@ export default {
 .header_box {
   background: #fff;
   height: 100vh;
+  transition: all .2s ease;
 
   .logo_box {
     height: 60px;
@@ -174,18 +224,28 @@ export default {
     }
   }
 
-  .menu_box {
-    overflow-y: auto;
-  }
-
-  .menu_style {
+  .icon_wrapper {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
+    padding: 12px 0;
   }
 
-  .icon_style {
-    margin: 10px 0;
+  .icon_inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+  }
+
+
+  /deep/ .ivu-menu-item {
+    display: flex;
+    align-items: center;
+
+    .text {
+      margin-left: 10px;
+    }
   }
 
   .dropdown_box {

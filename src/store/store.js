@@ -1,17 +1,22 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import index from './index';
+// store/index.js
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
+
 export default new Vuex.Store({
   state: {
-    ...index.state,
+    // 全局菜单折叠状态
+    isCollapsed: false
   },
   mutations: {
-    ...index.mutations,
-  },
-  actions: {
-    ...index.actions,
-  },
-  modules: {}
-});
+    // 切换折叠状态
+    toggleCollapsed(state) {
+      state.isCollapsed = !state.isCollapsed
+    },
+    // 设置折叠状态
+    setCollapsed(state, val) {
+      state.isCollapsed = val
+    }
+  }
+})
