@@ -110,7 +110,7 @@ export default {
     return {
       themeType: 'light',
       theme: 'light',
-      head_logo: require("@/assets/images/logo.png"),
+      head_logo: require("@/assets/images/logo_replaced.png"),
       ymsIcon: require("@/assets/images/icon-yms.png"),
       activeName: ''
     };
