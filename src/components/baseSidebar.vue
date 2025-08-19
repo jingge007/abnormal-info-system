@@ -10,8 +10,8 @@
   >
     <!-- Logo：展开/收起两种形态 -->
     <div class="logo_box" @click="logoBtn">
-      <img :class="isCollapsed ? 'mini_head_logo' : 'head_logo'" :src="head_logo" alt="">
-      <h2 v-if="!isCollapsed" class="title">YMS工作台</h2>
+      <img :class="isCollapsed ? 'mini_head_logo' : 'head_logo'" :src="isCollapsed ? ymsIcon :head_logo" alt="">
+      <h2 v-if="!isCollapsed" class="title">工作台</h2>
     </div>
 
     <!-- 菜单 -->
@@ -27,8 +27,7 @@
         <Submenu
           v-if="!isCollapsed && !item.singlePage"
           :key="'open-sub-' + index"
-          :name="item.name"
-        >
+          :name="item.name">
           <template slot="title">
             <base-icon :name="item.icon" :size="item.icon_size"></base-icon>
             <span class="text">{{ item.title }}</span>
@@ -36,21 +35,18 @@
           <MenuItem
             v-for="(ele, ids) in item.children"
             :key="'open-leaf-' + index + '-' + ids"
-            :name="ele.name"
-          >{{ ele.title }}</MenuItem>
+            :name="ele.name">{{ ele.title }}</MenuItem>
         </Submenu>
 
         <!-- 展开 && 无子菜单 -->
         <MenuItem
           v-if="!isCollapsed && item.singlePage"
           :key="'open-item-' + index"
-          :name="item.name"
-        >
+          :name="item.name">
           <base-icon
             :name="item.icon"
             :size="item.icon_size"
-            :color="item.name === activeName ? '#2d8cf0' : '#666'"
-          />
+            :color="item.name === activeName ? '#2d8cf0' : '#666'"/>
           <span class="text">{{ item.title }}</span>
         </MenuItem>
 
@@ -62,22 +58,19 @@
           transfer-class-name="dropdown_box"
           @on-click="SelectNav"
           placement="right"
-          trigger="hover"
-        >
+          trigger="hover">
           <div class="icon_inner">
             <base-icon
               :name="item.icon"
               :size="item.size || 22"
-              :color="item.name === activeName ? '#2d8cf0' : '#666'"
-            />
+              :color="item.name === activeName ? '#2d8cf0' : '#666'"/>
           </div>
           <DropdownMenu slot="list">
             <DropdownItem
               v-for="(ele, ids) in item.children"
               :key="'col-leaf-' + index + '-' + ids"
               :name="ele.name"
-              :selected="ele.name === activeName"
-            >
+              :selected="ele.name === activeName">
               {{ ele.title }}
             </DropdownItem>
           </DropdownMenu>
@@ -91,20 +84,15 @@
           transfer-class-name="dropdown_box"
           @on-click="SelectNav"
           placement="right"
-          trigger="hover"
-        >
+          trigger="hover">
           <div class="icon_inner">
             <base-icon
               :name="item.icon"
               :size="item.size || 22"
-              :color="item.name === activeName ? '#2d8cf0' : '#666'"
-            />
+              :color="item.name === activeName ? '#2d8cf0' : '#666'"/>
           </div>
           <DropdownMenu slot="list">
-            <DropdownItem
-              :name="item.name"
-              :selected="item.name === activeName"
-            >
+            <DropdownItem :name="item.name" :selected="item.name === activeName">
               {{ item.title }}
             </DropdownItem>
           </DropdownMenu>
@@ -122,7 +110,8 @@ export default {
     return {
       themeType: 'light',
       theme: 'light',
-      head_logo: require("@/assets/images/head_logo.png"),
+      head_logo: require("@/assets/images/logo.png"),
+      ymsIcon: require("@/assets/images/icon-yms.png"),
       activeName: ''
     };
   },
@@ -139,7 +128,12 @@ export default {
       return this.$store.state.isCollapsed;
     },
     submenuList() {
-      return this.formatRoutesToMenu(router.options.routes[0].children || []);
+      console.log('=======router.options=====', router.options)
+      let arr1 = router.options.routes[0].children || [];
+      let arr2 = router.options.routes.filter((item) => item.meta?.externalMenu);
+      let list = [...arr1, ...arr2];
+      console.log('=======list=====', list)
+      return this.formatRoutesToMenu(list);
     },
     menuStyle() {
       return {
@@ -163,13 +157,38 @@ export default {
           size: r.meta?.size,
           name: r.name,
           title: r.meta?.title,
+          externalMenu: r.meta?.externalMenu ?? false,
           children: r.children ? this.formatRoutesToMenu(r.children) : []
         }));
     },
     SelectNav(name) {
       this.activeName = name;
-      this.$router.push({name}).catch(() => {
-      });
+      // 查找被点击的路由信息
+      const findRoute = (routes) => {
+        for (let route of routes) {
+          if (route.name === name) {
+            return route;
+          }
+          if (route.children) {
+            const found = findRoute(route.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const route = findRoute(this.$router.options.routes);
+      // 如果是外部菜单，则在新窗口打开
+      if (route && route.meta && route.meta.externalMenu) {
+        const {href} = this.$router.resolve({
+          path: route.path,
+        });
+        window.open(href, '_blank');
+      } else {
+        // 内部菜单使用路由跳转
+        this.$router.push({name}).catch(() => {
+        });
+      }
     },
     logoBtn() {
       this.$router.push({path: '/'}).catch(() => {
@@ -207,13 +226,16 @@ export default {
     border-bottom: 1px solid #f8f8f9;
 
     .head_logo {
-      width: 50px;
-      height: 50px;
+      width: 138px;
+      height: 23px;
+      margin-right: 4px;
+      position: relative;
+      top: -4px;
     }
 
     .mini_head_logo {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
     }
 

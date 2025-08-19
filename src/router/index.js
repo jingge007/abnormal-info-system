@@ -23,6 +23,7 @@ Vue.use(Router);
  *  - icon_size    展开状态下菜单图标大小
  *  - size         折叠状态下菜单图标大小
  *  - hideInMenu   是否在侧边栏隐藏当前路由（true：隐藏，false：显示）
+ *  - externalMenu 是否是外部菜单（true：外部菜单，false：内部菜单）
  */
 const routes = [
   {
@@ -59,17 +60,21 @@ const routes = [
   {
     path: '/errorReport',
     name: 'errorReport',
-    component: () => import('@/views/errorReport'),
-    meta: {
-      title: '异常报告',
-      icon: 'icon-baogao',
-      singlePage: false,
-      icon_size: '18px',
-      size: '23px',
-      hideInMenu: true // 不显示在侧边栏
-    },
-    children: []
+    component: () => import('@/views/errorReport')
   },
+  {
+    path: '/generateExternalExceptionReport',
+    name: 'generateExternalExceptionReport',
+    component: () => import('@/views/generateExceptionReport'),
+    meta: {
+      title: '生成外部异常报告',
+      icon: 'icon-jiexi',
+      singlePage: true,
+      icon_size: '20px',
+      size: '28px',
+      externalMenu: true
+    }
+  }
 ];
 
 export default new Router({
