@@ -128,11 +128,9 @@ export default {
       return this.$store.state.isCollapsed;
     },
     submenuList() {
-      console.log('=======router.options=====', router.options)
       let arr1 = router.options.routes[0].children || [];
       let arr2 = router.options.routes.filter((item) => item.meta?.externalMenu);
       let list = [...arr1, ...arr2];
-      console.log('=======list=====', list)
       return this.formatRoutesToMenu(list);
     },
     menuStyle() {

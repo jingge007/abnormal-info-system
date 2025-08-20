@@ -83,22 +83,22 @@ export default {
         {
           title: '标题',
           key: 'fileTitle',
-          minWidth: 200
+          minWidth: 600
         },
         {
           title: 'ID',
           key: 'fileContentId',
-          minWidth: 150
+          minWidth: 140
         },
         {
           title: '创建时间',
           key: 'createdAt',
-          minWidth: 200
+          minWidth: 140
         },
         {
           title: '更新时间',
           key: 'updatedAt',
-          minWidth: 200
+          minWidth: 140
         },
         {
           title: '操作',
@@ -348,6 +348,36 @@ export default {
     tr:hover {
       background-color: #eef0f2;
     }
+  }
+
+  // 代码块样式 - 类似 Sublime Text 风格
+  :deep(pre) {
+    background-color: #2d333b;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    margin: 10px 0;
+    line-height: 1.5;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 14px;
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 14px;
+      color: #e1e4e8;
+    }
+  }
+
+  // 行内代码样式
+  :deep(code) {
+    background-color: rgba(27, 31, 35, 0.05);
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 14px;
   }
 }
 
