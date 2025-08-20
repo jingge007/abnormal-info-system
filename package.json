@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "npm config set registry https://registry.npmjs.org/ && vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "dev": "npx gh-pages -d dist",
-    "vercel-build": "npm config set registry https://registry.npmjs.org/ && npm run build"
-  },
+    "dev": "npx gh-pages -d dist"
+  }
+,
   "dependencies": {
     "core-js": "^3.8.3",
     "file-saver": "^2.0.5",
