@@ -1,8 +1,18 @@
 {
+  "version": 2,
   "builds": [
-    { "src": "package.json", "use": "@vercel/static-build" }
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    }
   ],
   "scripts": {
-    "build": "npm run vercel-build"
-  }
+    "build": "npm config set registry https://registry.npmjs.org/ && npm run build"
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
