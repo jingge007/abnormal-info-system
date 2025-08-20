@@ -37,10 +37,10 @@ const routes = [
         component: () => import('@/views/generateExceptionReport'),
         meta: {
           title: '生成异常报告',
-          icon: 'icon-jiexi',
+          icon: 'icon-shengchengbaogao',
           singlePage: true,
-          icon_size: '20px',
-          size: '28px'
+          icon_size: '18px',
+          size: '18px'
         }
       },
       {
@@ -49,12 +49,36 @@ const routes = [
         component: () => import('@/views/packagedService'),
         meta: {
           title: '打包服务',
-          icon: 'icon-dianying',
+          icon: 'icon-ziyuanguanli',
           singlePage: true,
           icon_size: '18px',
-          size: '23px'
+          size: '18px'
         }
-      }
+      },
+      {
+        path: '/uploadContentMaterials',
+        name: 'uploadContentMaterials',
+        component: () => import('@/views/uploadContentMaterials'),
+        meta: {
+          title: '内容资料上传',
+          icon: 'icon-cailiaoshenbao',
+          singlePage: true,
+          icon_size: '18px',
+          size: '18px'
+        }
+      },
+      {
+        path: '/notepadList',
+        name: 'notepadList',
+        component: () => import('@/views/notepadList'),
+        meta: {
+          title: '记事本列表',
+          icon: 'icon-jishiben',
+          singlePage: true,
+          icon_size: '18px',
+          size: '18px'
+        }
+      },
     ]
   },
   {
@@ -68,13 +92,24 @@ const routes = [
     component: () => import('@/views/generateExceptionReport'),
     meta: {
       title: '生成外部异常报告',
-      icon: 'icon-jiexi',
+      icon: 'icon-waibubaogao',
+      icon_size: '21px',
+      size: '21px',
       singlePage: true,
-      icon_size: '20px',
-      size: '28px',
       externalMenu: true
     }
-  }
+  },
+  {
+    path: '/notepadDetails',
+    name: 'notepadDetails',
+    component: () => import('@/views/notepadDetails'),
+    meta: {
+      title: '记事本详情',
+      singlePage: true,
+      hideInMenu: true,
+      externalMenu: true
+    }
+  },
 ];
 
 export default new Router({
