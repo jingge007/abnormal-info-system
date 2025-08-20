@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "dev": "npx gh-pages -d dist"
+    "dev": "npx gh-pages -d dist",
+    "vercel-build": "npm config set registry https://registry.npmjs.org/ && npm run build"
   },
   "dependencies": {
     "core-js": "^3.8.3",
