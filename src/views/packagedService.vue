@@ -23,99 +23,103 @@
         </Select>
       </FormItem>
 
-      <!-- 一键打包下拉 -->
+      <!-- 一键打包：Checkbox 分组 + 分组全选 + 背景色 -->
       <FormItem label="一键打包">
-        <Dropdown @on-click="handleCategorySelect">
-          <Button type="primary">
-            一键打包 <Icon type="ios-arrow-down"></Icon>
-          </Button>
-          <DropdownMenu slot="list">
-            <!-- 全选类 -->
-            <DropdownItem disabled class="group-title">全选类</DropdownItem>
-            <DropdownItem
-              v-if="hasFrontend"
-              name="all_frontend"
-              :class="{active: selectedCategory==='all_frontend'}"
-            >
-              <Icon type="logo-html5" class="menu-icon frontend"/> 全前端服务
-            </DropdownItem>
-            <DropdownItem
-              v-if="hasBackend"
-              name="all_backend"
-              :class="{active: selectedCategory==='all_backend'}"
-            >
-              <Icon type="md-cog" class="menu-icon backend"/> 全后台服务
-            </DropdownItem>
+        <div class="checkbox-groups">
+          <!-- 全选类 -->
+          <div class="group group--all">
+            <div class="group-head">
+              <Checkbox
+                :indeterminate="isGroupIndeterminate('all')"
+                :value="isGroupChecked('all')"
+                @on-change="toggleGroup('all', $event)"
+              >
+                全选类
+              </Checkbox>
+            </div>
+            <div class="group-body">
+              <CheckboxGroup v-model="selectedCategories" @on-change="handleCategoryChange">
+                <Checkbox label="all_frontend">全前端服务</Checkbox>
+                <Checkbox label="all_backend">全后台服务</Checkbox>
+              </CheckboxGroup>
+            </div>
+          </div>
 
-            <!-- 运营服务 -->
-            <DropdownItem v-if="hasFrontendYMS || hasBackendYMS" disabled class="group-title">运营服务</DropdownItem>
-            <DropdownItem
-              v-if="hasFrontendYMS"
-              name="frontend_yms"
-              :class="{active: selectedCategory==='frontend_yms'}"
-            >
-              <Icon type="ios-desktop" class="menu-icon yms"/> 前端服务
-            </DropdownItem>
-            <DropdownItem
-              v-if="hasBackendYMS"
-              name="backend_yms"
-              :class="{active: selectedCategory==='backend_yms'}"
-            >
-              <Icon type="md-settings" class="menu-icon yms"/> 后台服务
-            </DropdownItem>
+          <!-- 运营服务 -->
+          <div class="group group--operation" v-if="hasAnyYms">
+            <div class="group-head">
+              <Checkbox
+                :indeterminate="isGroupIndeterminate('operation')"
+                :value="isGroupChecked('operation')"
+                @on-change="toggleGroup('operation', $event)"
+              >
+                运营服务
+              </Checkbox>
+            </div>
+            <div class="group-body">
+              <CheckboxGroup v-model="selectedCategories" @on-change="handleCategoryChange">
+                <Checkbox label="frontend_yms">前端服务</Checkbox>
+                <Checkbox label="backend_yms">后台服务</Checkbox>
+              </CheckboxGroup>
+            </div>
+          </div>
 
-            <!-- 供应商服务 -->
-            <DropdownItem v-if="hasFrontendSupplier || hasBackendSupplier" disabled class="group-title">供应商服务</DropdownItem>
-            <DropdownItem
-              v-if="hasFrontendSupplier"
-              name="frontend_supplier"
-              :class="{active: selectedCategory==='frontend_supplier'}"
-            >
-              <Icon type="ios-construct" class="menu-icon supplier"/> 前端服务
-            </DropdownItem>
-            <DropdownItem
-              v-if="hasBackendSupplier"
-              name="backend_supplier"
-              :class="{active: selectedCategory==='backend_supplier'}"
-            >
-              <Icon type="md-hammer" class="menu-icon supplier"/> 后台服务
-            </DropdownItem>
+          <!-- 供应商服务 -->
+          <div class="group group--supplier" v-if="hasAnySupplier">
+            <div class="group-head">
+              <Checkbox
+                :indeterminate="isGroupIndeterminate('supplier')"
+                :value="isGroupChecked('supplier')"
+                @on-change="toggleGroup('supplier', $event)"
+              >
+                供应商服务
+              </Checkbox>
+            </div>
+            <div class="group-body">
+              <CheckboxGroup v-model="selectedCategories" @on-change="handleCategoryChange">
+                <Checkbox label="frontend_supplier">前端服务</Checkbox>
+                <Checkbox label="backend_supplier">后台服务</Checkbox>
+              </CheckboxGroup>
+            </div>
+          </div>
 
-            <!-- 商城服务 -->
-            <DropdownItem v-if="hasFrontendShopping || hasBackendShopping" disabled class="group-title">商城服务</DropdownItem>
-            <DropdownItem
-              v-if="hasFrontendShopping"
-              name="frontend_shopping"
-              :class="{active: selectedCategory==='frontend_shopping'}"
-            >
-              <Icon type="md-cart" class="menu-icon shopping"/> 前端服务
-            </DropdownItem>
-            <DropdownItem
-              v-if="hasBackendShopping"
-              name="backend_shopping"
-              :class="{active: selectedCategory==='backend_shopping'}"
-            >
-              <Icon type="md-archive" class="menu-icon shopping"/> 后台服务
-            </DropdownItem>
+          <!-- 商城服务（按 systemServicesType 控制显隐，YMS 会有） -->
+          <div class="group group--shopping" v-if="hasAnyShopping">
+            <div class="group-head">
+              <Checkbox
+                :indeterminate="isGroupIndeterminate('shopping')"
+                :value="isGroupChecked('shopping')"
+                @on-change="toggleGroup('shopping', $event)"
+              >
+                商城服务
+              </Checkbox>
+            </div>
+            <div class="group-body">
+              <CheckboxGroup v-model="selectedCategories" @on-change="handleCategoryChange">
+                <Checkbox label="frontend_shopping">商城服务</Checkbox>
+              </CheckboxGroup>
+            </div>
+          </div>
 
-            <!-- 分销商服务 -->
-            <DropdownItem v-if="hasFrontendDistributor || hasBackendDistributor" disabled class="group-title">分销商服务</DropdownItem>
-            <DropdownItem
-              v-if="hasFrontendDistributor"
-              name="frontend_distributor"
-              :class="{active: selectedCategory==='frontend_distributor'}"
-            >
-              <Icon type="md-people" class="menu-icon distributor"/> 前端服务
-            </DropdownItem>
-            <DropdownItem
-              v-if="hasBackendDistributor"
-              name="backend_distributor"
-              :class="{active: selectedCategory==='backend_distributor'}"
-            >
-              <Icon type="md-person" class="menu-icon distributor"/> 后台服务
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+          <!-- 分销商服务 -->
+          <div class="group group--distributor" v-if="hasAnyDistributor">
+            <div class="group-head">
+              <Checkbox
+                :indeterminate="isGroupIndeterminate('distributor')"
+                :value="isGroupChecked('distributor')"
+                @on-change="toggleGroup('distributor', $event)"
+              >
+                分销商服务
+              </Checkbox>
+            </div>
+            <div class="group-body">
+              <CheckboxGroup v-model="selectedCategories" @on-change="handleCategoryChange">
+                <Checkbox label="frontend_distributor">前端服务</Checkbox>
+                <Checkbox label="backend_distributor">后台服务</Checkbox>
+              </CheckboxGroup>
+            </div>
+          </div>
+        </div>
       </FormItem>
 
       <!-- 复制 & 重置 -->
@@ -134,126 +138,217 @@ export default {
     return {
       selectedProject: 'YMS',
       selectedServices: [],
-      selectedCategory: '',
+      selectedCategories: [], // 勾选的分类值（通过它来计算 selectedServices）
       projectList: [
         {label: 'YMS', value: 'YMS'},
         {label: 'VES', value: 'VES'}
       ],
+      // 使用你提供的基础数据结构（每个项目有 systemServicesType 和 serviceList）
       servicesMap: {
-        YMS: [
-          {name: 'yms-compiler', value: 'yms-compiler'},
-          {name: 'yms-core-compiler', value: 'yms-core-compiler'},
-          {name: 'yms-core-controller', value: 'yms-core-controller'},
-          {name: 'yms-core-service', value: 'yms-core-service'},
-          {name: 'yms-core-static', value: 'yms-core-static'},
-          {name: 'yms-distributor-compiler', value: 'yms-distributor-compiler'},
-          {name: 'yms-distributor-controller', value: 'yms-distributor-controller'},
-          {name: 'yms-distributor-service', value: 'yms-distributor-service'},
-          {name: 'yms-distributor-static', value: 'yms-distributor-static'},
-          {name: 'yms-shopping-static', value: 'yms-shopping-static'},
-          {name: 'yms-supplier-compiler', value: 'yms-supplier-compiler'},
-          {name: 'yms-supplier-controller', value: 'yms-supplier-controller'},
-          {name: 'yms-supplier-service', value: 'yms-supplier-service'},
-          {name: 'yms-supplier-static', value: 'yms-supplier-static'}
-        ],
-        VES: [
-          {name: 'ves-compiler', value: 'ves-compiler'},
-          {name: 'ves-core-compiler', value: 'ves-core-compiler'},
-          {name: 'ves-core-controller', value: 'ves-core-controller'},
-          {name: 'ves-core-service', value: 'ves-core-service'},
-          {name: 'ves-core-static', value: 'ves-core-static'},
-          {name: 'ves-supplier-compiler', value: 'ves-supplier-compiler'},
-          {name: 'ves-supplier-controller', value: 'ves-supplier-controller'},
-          {name: 'ves-supplier-service', value: 'ves-supplier-service'},
-          {name: 'ves-supplier-static', value: 'ves-supplier-static'}
-        ]
+        YMS: {
+          systemServicesType: ['yms', 'supplier', 'distributor', 'shopping'],
+          serviceList: [
+            {name: 'yms-compiler', value: 'yms-compiler'},
+            {name: 'yms-core-compiler', value: 'yms-core-compiler'},
+            {name: 'yms-core-controller', value: 'yms-core-controller'},
+            {name: 'yms-core-service', value: 'yms-core-service'},
+            {name: 'yms-core-static', value: 'yms-core-static'},
+            {name: 'yms-distributor-compiler', value: 'yms-distributor-compiler'},
+            {name: 'yms-distributor-controller', value: 'yms-distributor-controller'},
+            {name: 'yms-distributor-service', value: 'yms-distributor-service'},
+            {name: 'yms-distributor-static', value: 'yms-distributor-static'},
+            {name: 'yms-shopping-static', value: 'yms-shopping-static'},
+            {name: 'yms-supplier-compiler', value: 'yms-supplier-compiler'},
+            {name: 'yms-supplier-controller', value: 'yms-supplier-controller'},
+            {name: 'yms-supplier-service', value: 'yms-supplier-service'},
+            {name: 'yms-supplier-static', value: 'yms-supplier-static'}
+          ]
+        },
+        VES: {
+          systemServicesType: ['yms', 'supplier'],
+          serviceList: [
+            {name: 'ves-compiler', value: 'ves-compiler'},
+            {name: 'ves-core-compiler', value: 'ves-core-compiler'},
+            {name: 'ves-core-controller', value: 'ves-core-controller'},
+            {name: 'ves-core-service', value: 'ves-core-service'},
+            {name: 'ves-core-static', value: 'ves-core-static'},
+            {name: 'ves-supplier-compiler', value: 'ves-supplier-compiler'},
+            {name: 'ves-supplier-controller', value: 'ves-supplier-controller'},
+            {name: 'ves-supplier-service', value: 'ves-supplier-service'},
+            {name: 'ves-supplier-static', value: 'ves-supplier-static'}
+          ]
+        }
       }
     };
   },
   computed: {
+    // 当前项目的服务列表（结构为 {name, value} 的数组）
     filteredServices() {
-      return this.servicesMap[this.selectedProject] || [];
+      const proj = this.servicesMap[this.selectedProject];
+      return proj ? proj.serviceList : [];
     },
-    hasFrontend() {
-      return this.filteredServices.some(s => s.value.endsWith('-static'));
+
+    // 基于 systemServicesType 控制每个分组是否展示 —— 解决 VES 没显示运营的问题
+    hasAnyYms() {
+      const proj = this.servicesMap[this.selectedProject];
+      return proj && Array.isArray(proj.systemServicesType) && proj.systemServicesType.includes('yms');
     },
-    hasBackend() {
-      return this.filteredServices.some(s => !s.value.endsWith('-static'));
+    hasAnySupplier() {
+      const proj = this.servicesMap[this.selectedProject];
+      return proj && Array.isArray(proj.systemServicesType) && proj.systemServicesType.includes('supplier');
     },
-    hasFrontendYMS() {
-      return this.filteredServices.some(s => s.value.includes('yms') && s.value.endsWith('-static'));
+    hasAnyShopping() {
+      const proj = this.servicesMap[this.selectedProject];
+      return proj && Array.isArray(proj.systemServicesType) && proj.systemServicesType.includes('shopping');
     },
-    hasBackendYMS() {
-      return this.filteredServices.some(s => s.value.includes('yms') && !s.value.endsWith('-static'));
-    },
-    hasFrontendSupplier() {
-      return this.filteredServices.some(s => s.value.includes('supplier') && s.value.endsWith('-static'));
-    },
-    hasBackendSupplier() {
-      return this.filteredServices.some(s => s.value.includes('supplier') && !s.value.endsWith('-static'));
-    },
-    hasFrontendShopping() {
-      return this.filteredServices.some(s => s.value.includes('shopping') && s.value.endsWith('-static'));
-    },
-    hasBackendShopping() {
-      return this.filteredServices.some(s => s.value.includes('shopping') && !s.value.endsWith('-static'));
-    },
-    hasFrontendDistributor() {
-      return this.filteredServices.some(s => s.value.includes('distributor') && s.value.endsWith('-static'));
-    },
-    hasBackendDistributor() {
-      return this.filteredServices.some(s => s.value.includes('distributor') && !s.value.endsWith('-static'));
-    },
+    hasAnyDistributor() {
+      const proj = this.servicesMap[this.selectedProject];
+      return proj && Array.isArray(proj.systemServicesType) && proj.systemServicesType.includes('distributor');
+    }
   },
   methods: {
-    /** 切换项目时清空选中服务和分类 */
     handleProjectChange() {
+      // 切换项目时清空
       this.selectedServices = [];
-      this.selectedCategory = '';
+      this.selectedCategories = [];
     },
-    /** 一键打包下拉选择逻辑，按前端/后台分类筛选服务 */
-    handleCategorySelect(type) {
-      this.selectedCategory = type;
-      const services = this.filteredServices;
-      let selected = [];
-      switch (type) {
-        case 'all_frontend':
-          selected = services.filter(s => s.value.endsWith('-static')).map(s => s.value);
-          break;
-        case 'all_backend':
-          selected = services.filter(s => !s.value.endsWith('-static')).map(s => s.value);
-          break;
-        default:
-          const isFrontend = type.startsWith('frontend');
-          const keyword = type.split('_')[1];
-          selected = services
-            .filter(s => (isFrontend ? s.value.endsWith('-static') : !s.value.endsWith('-static')))
-            .filter(s => s.value.includes(keyword))
-            .map(s => s.value);
-      }
-      this.selectedServices = selected;
 
-      // 一键打包完成后直接复制选中值
-      if (selected.length) {
-        this.$tools.copyText(selected.join(',')).then(() => {
-          this.$Message.success('一键打包已复制选中值！');
-        });
-      } else {
-        this.$Message.warning('没有可选服务可复制');
-      }
+    // 每个分组对应的子分类 key 列表
+    groupCats(key) {
+      const map = {
+        all: ['all_frontend', 'all_backend'],
+        operation: ['frontend_yms', 'backend_yms'],
+        supplier: ['frontend_supplier', 'backend_supplier'],
+        shopping: ['frontend_shopping'],
+        distributor: ['frontend_distributor', 'backend_distributor']
+      };
+      return map[key] || [];
     },
-    /** 复制当前选中的打包服务 */
+
+    // 分组是否全选（所有该组子分类都被勾选）
+    isGroupChecked(key) {
+      const cats = this.groupCats(key);
+      return cats.length > 0 && cats.every(c => this.selectedCategories.includes(c));
+    },
+
+    // 分组选中一部分（半选）
+    isGroupIndeterminate(key) {
+      const cats = this.groupCats(key);
+      const cnt = cats.filter(c => this.selectedCategories.includes(c)).length;
+      return cnt > 0 && cnt < cats.length;
+    },
+
+    // 切换分组全选（会把分组内的子分类加入或移除 selectedCategories，然后重算 selectedServices）
+    toggleGroup(key, checked) {
+      const cats = this.groupCats(key);
+      if (checked) {
+        this.selectedCategories = Array.from(new Set([...this.selectedCategories, ...cats]));
+      } else {
+        this.selectedCategories = this.selectedCategories.filter(c => !cats.includes(c));
+      }
+      this.handleCategoryChange();
+    },
+
+    // 从 selectedCategories 计算 selectedServices（去重、按 serviceList 原顺序）
+    handleCategoryChange() {
+      const chosen = new Set();
+      const list = this.filteredServices; // 保持原始顺序
+      const endsStatic = v => v.endsWith('-static');
+      const projectPrefix = this.selectedProject.toLowerCase(); // 'yms' 或 'ves'
+
+      const collectForType = (type) => {
+        switch (type) {
+          case 'all_frontend':
+            return list.filter(s => endsStatic(s.value)).map(s => s.value);
+
+          case 'all_backend':
+            return list.filter(s => !endsStatic(s.value)).map(s => s.value);
+
+          // 运营（使用 projectPrefix 匹配 core）
+          case 'backend_yms':
+            // 前缀 {proj}-core 且不是 -static
+            return list
+              .filter(s => s.value.startsWith(`${projectPrefix}-core`) && !endsStatic(s.value))
+              .map(s => s.value);
+
+          case 'frontend_yms':
+            // {proj}-core-static（或包含 core 且是 static）
+            return list
+              .filter(s => (s.value === `${projectPrefix}-core-static`) || (s.value.startsWith(`${projectPrefix}-core`) && endsStatic(s.value)))
+              .map(s => s.value);
+
+          // 供应商（兼容命名： {proj}-supplier-* 或 包含 'supplier'）
+          case 'backend_supplier':
+            return list
+              .filter(s =>
+                !endsStatic(s.value) &&
+                (s.value.startsWith(`${projectPrefix}-supplier`) || s.value.includes('supplier'))
+              )
+              .map(s => s.value);
+
+          case 'frontend_supplier':
+            return list
+              .filter(s =>
+                (s.value === `${projectPrefix}-supplier-static`) ||
+                (s.value.includes('supplier') && endsStatic(s.value))
+              )
+              .map(s => s.value);
+
+          // 商城（通常是 {proj}-shopping-static 或 包含 'shopping' 且 static）
+          case 'frontend_shopping':
+            return list
+              .filter(s =>
+                (s.value === `${projectPrefix}-shopping-static`) ||
+                (s.value.includes('shopping') && endsStatic(s.value))
+              )
+              .map(s => s.value);
+
+          // 分销商（通常是 {proj}-distributor-* 或 包含 'distributor'）
+          case 'frontend_distributor':
+            return list
+              .filter(s =>
+                (s.value === `${projectPrefix}-distributor-static`) ||
+                (s.value.includes('distributor') && endsStatic(s.value))
+              )
+              .map(s => s.value);
+
+          case 'backend_distributor':
+            return list
+              .filter(s =>
+                (s.value === `${projectPrefix}-distributor`) ||
+                (s.value.includes('distributor') && !endsStatic(s.value))
+              )
+              .map(s => s.value);
+
+          default:
+            return [];
+        }
+      };
+
+      // 收集所有被勾选分类对应的服务
+      this.selectedCategories.forEach(type => {
+        collectForType(type).forEach(v => chosen.add(v));
+      });
+
+      // 按原 serviceList 顺序输出并去重
+      const ordered = [];
+      list.forEach(s => {
+        if (chosen.has(s.value)) ordered.push(s.value);
+      });
+      this.selectedServices = ordered;
+    },
+
     copyServices() {
       if (!this.selectedServices.length) {
         return this.$Message.warning('请先选择打包服务');
       }
       this.$tools.copyText(this.selectedServices.join(',')).then(() => this.$Message.success('复制成功！'));
     },
-    /** 重置选中项目、服务和分类 */
+
     resetSelection() {
       this.selectedProject = 'YMS';
       this.selectedServices = [];
-      this.selectedCategory = '';
+      this.selectedCategories = [];
     }
   }
 };
@@ -266,44 +361,55 @@ export default {
   border-radius: 8px;
 }
 
-.group-title {
-  font-weight: bold;
-  color: #999;
-  cursor: default;
-  font-size: 12px;
-  padding: 4px 10px;
+/* 栅格布局 */
+.checkbox-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
-.menu-icon {
-  margin-right: 6px;
-  font-size: 14px;
+/* 分组基样式 */
+.group {
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 12px 12px 10px;
 }
 
-.frontend {
-  color: #1890ff;
+/* 分组头/体 */
+.group-head {
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
 }
 
-.backend {
-  color: #52c41a;
+.group-body :deep(.ivu-checkbox-wrapper) {
+  margin-right: 14px;
+  margin-bottom: 6px;
 }
 
-.yms {
-  color: #fa8c16;
+/* 不同分组背景色区分 */
+.group--all {
+  background: #f5f9ff;
+  border-color: #d6e4ff;
 }
 
-.supplier {
-  color: #722ed1;
+.group--operation {
+  background: #e6f7ff;
+  border-color: #bae7ff;
 }
 
-.shopping {
-  color: #f5222d;
+.group--supplier {
+  background: #f6ffed;
+  border-color: #d9f7be;
 }
 
-.distributor {
-  color: #13c2c2;
+.group--shopping {
+  background: #fff0f6;
+  border-color: #ffd6e7;
 }
 
-.active {
-  background-color: #e6f7ff;
+.group--distributor {
+  background: #fffbe6;
+  border-color: #ffe58f;
 }
 </style>

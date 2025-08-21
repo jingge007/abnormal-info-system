@@ -32,7 +32,7 @@
 
       <div class="blog-sidebar-outer" v-if="notepadData">
         <div class="sidebar-card">
-          <h3 class="sidebar-title">信息</h3>
+          <h3 class="sidebar-title">文章信息</h3>
           <div class="info-item">
             <span class="info-label">发布时间:</span>
             <span class="info-value">{{ formatDateTime(notepadData.createdAt) }}</span>
@@ -167,7 +167,7 @@ export default {
   }
 
   .blog-title {
-    font-size: 28px;
+    font-size: 21px;
     font-weight: 600;
     margin-bottom: 15px;
     color: white;
