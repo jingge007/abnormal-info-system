@@ -7,8 +7,7 @@
     "build": "npm config set registry https://registry.npmjs.org/ && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "npx gh-pages -d dist"
-  }
-,
+  },
   "dependencies": {
     "core-js": "^3.8.3",
     "file-saver": "^2.0.5",
@@ -28,7 +27,9 @@
     "gh-pages": "^5.0.0",
     "less": "^4.0.0",
     "less-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "windicss": "^3.5.6",
+    "windicss-webpack-plugin": "^1.8.0"
   },
   "browserslist": [
     "> 1%",
