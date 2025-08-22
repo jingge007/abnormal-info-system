@@ -29,7 +29,7 @@
       <template #action="{ row }">
         <Button size="small" @click="viewDetailsInNewWindow(row)">查看详情</Button>
         <Button size="small" @click="editItem(row)" style="margin-left: 5px;">编辑</Button>
-        <Button size="small" @click="copyAddress(row)" style="margin-left: 5px;">复制详情地址</Button>
+        <Button size="small" @click="copyAddress(row)" style="margin-left: 5px;">复制链接</Button>
         <Button size="small" type="error" @click="deleteItem(row)" style="margin-left: 5px;">删除</Button>
       </template>
     </Table>
@@ -50,39 +50,25 @@
     <Modal
       v-model="showViewModal"
       title="查看内容"
-      width="1000"
+      width="1200"
       :styles="{top: '30px'}"
       @on-cancel="cancelView"
+      @on-visible-change="onModalVisibleChange"
     >
       <div v-if="currentViewItem" class="view-header">
         <h3>{{ currentViewItem.fileTitle }}</h3>
       </div>
-      <div v-if="currentViewItem" v-html="currentViewItem.fileContent" class="view-content"></div>
+      <div v-if="currentViewItem" v-html="currentViewItem.fileContent" class="richtext-content view-content" ref="viewContent"></div>
       <div slot="footer">
         <Button @click="closeViewModal">关闭</Button>
       </div>
-    </Modal>
-
-    <!-- 编辑弹窗 -->
-    <Modal
-      v-model="showEditModal"
-      title="编辑内容"
-      width="1000"
-      :styles="{top: '30px'}"
-      @on-ok="saveEdit"
-      @on-cancel="cancelEdit"
-    >
-      <div class="edit-header">
-        <Input v-model="editTitle" placeholder="请输入资料标题（最多50个字）" :maxlength="50" show-word-limit/>
-      </div>
-      <div ref="editEditor" class="edit-editor"></div>
     </Modal>
   </div>
 </template>
 
 <script>
-import WangEditor from 'wangeditor'
 import Browser from '@/utils/tools.js'
+import {highlightCode} from '@/utils/prismConfig.js'
 
 export default {
   name: 'notepadList',
@@ -90,12 +76,8 @@ export default {
     return {
       notepadList: [], // 记事本列表数据
       selectedRows: [], // 选中的行
-      showEditModal: false, // 是否显示编辑弹窗
       showViewModal: false, // 是否显示查看弹窗
-      editEditor: null, // 编辑器实例
-      currentEditItem: null, // 当前编辑的项目
       currentViewItem: null, // 当前查看的项目
-      editTitle: '', // 编辑时的标题
       searchTitle: '', // 搜索标题
       total: 0, // 总数
       pageSize: 20, // 每页条数
@@ -144,12 +126,6 @@ export default {
   },
   mounted() {
     this.fetchNotepadList()
-  },
-  beforeDestroy() {
-    if (this.editEditor) {
-      this.editEditor.destroy()
-      this.editEditor = null
-    }
   },
   methods: {
     // 获取记事本列表数据
@@ -209,7 +185,7 @@ export default {
     viewDetailsInNewWindow(row) {
       const routeData = this.$router.resolve({
         name: 'notepadDetails',
-        query: { id: row.objectId }
+        query: {id: row.objectId}
       });
       window.open(routeData.href, '_blank');
     },
@@ -241,64 +217,32 @@ export default {
 
     // 编辑项目
     editItem(row) {
-      this.currentEditItem = row
-      this.editTitle = row.fileTitle
-      this.showEditModal = true
-      this.$nextTick(() => {
-        this.initEditEditor()
-      })
+      // 跳转到上传页面进行编辑，传递要编辑的项目ID
+      this.$router.push({
+        name: 'uploadContentMaterials',
+        query: {id: row.objectId}
+      });
     },
 
-    // 初始化编辑器
-    initEditEditor() {
-      if (this.editEditor) {
-        this.editEditor.destroy()
-      }
+    // 从内容中提取图片URL
+    extractImageUrls(content) {
+      const urls = [];
+      if (!content) return urls;
 
-      this.editEditor = new WangEditor(this.$refs.editEditor)
-      this.editEditor.config.height = 600
+      // 创建一个临时的div元素来解析HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = content;
 
-      this.editEditor.create()
-      this.editEditor.txt.html(this.currentEditItem.fileContent)
-    },
-
-    // 保存编辑
-    async saveEdit() {
-      // 检查标题是否为空
-      if (!this.editTitle) {
-        this.$Message.warning('标题不能为空')
-        return
-      }
-
-      try {
-        const NotepadData = this.$leancloud.Object.extend('notepadData')
-        const notepadData = new NotepadData()
-        notepadData.id = this.currentEditItem.objectId
-
-        const content = this.editEditor.txt.html()
-        notepadData.set('fileContent', content)
-        notepadData.set('fileTitle', this.editTitle)
-
-        await notepadData.save()
-        this.$Message.success('更新成功')
-        this.showEditModal = false
-        if (this.editEditor) {
-          this.editEditor.destroy()
-          this.editEditor = null
+      // 查找所有img标签
+      const images = tempDiv.querySelectorAll('img');
+      images.forEach(img => {
+        const src = img.getAttribute('src');
+        if (src) {
+          urls.push(src);
         }
-        this.fetchNotepadList() // 重新获取列表数据
-      } catch (error) {
-        this.$Message.error('更新失败: ' + error.message)
-      }
-    },
+      });
 
-    // 取消编辑
-    cancelEdit() {
-      this.showEditModal = false
-      if (this.editEditor) {
-        this.editEditor.destroy()
-        this.editEditor = null
-      }
+      return urls;
     },
 
     // 删除单个项目
@@ -308,6 +252,7 @@ export default {
         content: '确定要删除这条记录吗？',
         onOk: async () => {
           try {
+            // 直接删除数据库记录（不尝试删除文件，因为权限不足）
             const NotepadData = this.$leancloud.Object.extend('notepadData')
             const notepadData = new NotepadData()
             notepadData.id = row.objectId
@@ -329,6 +274,7 @@ export default {
         content: `确定要删除选中的${this.selectedRows.length}条记录吗？`,
         onOk: async () => {
           try {
+            // 直接删除数据库记录（不尝试删除文件，因为权限不足）
             const objectsToDelete = this.selectedRows.map(row => {
               const NotepadData = this.$leancloud.Object.extend('notepadData')
               const notepadData = new NotepadData()
@@ -370,18 +316,46 @@ export default {
       this.searchTitle = ''
       this.currentPage = 1
       this.fetchNotepadList()
+    },
+
+    // 模态框显示状态变化时的处理
+    onModalVisibleChange(visible) {
+      if (visible) {
+        // 延迟执行，确保DOM已经渲染完成
+        this.$nextTick(() => {
+          this.highlightCode();
+        });
+      }
+    },
+
+    // 高亮代码
+    highlightCode() {
+      highlightCode(this.$refs.viewContent);
     }
   },
   computed: {},
   created() {
 
   },
-  watch: {},
-  components: {}
+  watch: {
+    currentViewItem: {
+      handler() {
+        // 当查看的项目变化时，重新高亮代码
+        if (this.showViewModal && this.currentViewItem) {
+          this.$nextTick(() => {
+            this.highlightCode();
+          });
+        }
+      },
+      deep: true
+    }
+  },
 };
 </script>
 
 <style lang="less" scoped>
+@import '@/styles/richtext-content.css';
+
 .container_box {
   padding: 20px;
 }
@@ -402,82 +376,18 @@ export default {
   margin-bottom: 20px;
 }
 
-.edit-editor {
-  min-height: 600px;
-}
-
 .view-content {
   min-height: 600px;
   border: 1px solid #ddd;
   padding: 10px;
   overflow-y: auto;
   max-height: 60vh;
-
-  // 当内容中包含表格时的样式
-  :deep(table) {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 10px 0;
-
-    th, td {
-      border: 1px solid #dcdee2;
-      padding: 8px 12px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f8f9fa;
-    }
-
-    tr:hover {
-      background-color: #eef0f2;
-    }
-  }
-
-  // 代码块样式 - 类似 Sublime Text 风格
-  :deep(pre) {
-    background-color: #2d333b;
-    border-radius: 6px;
-    padding: 16px;
-    overflow: auto;
-    margin: 10px 0;
-    line-height: 1.5;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 14px;
-
-    code {
-      background-color: transparent;
-      padding: 0;
-      border-radius: 0;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-      font-size: 14px;
-      color: #e1e4e8;
-    }
-  }
-
-  // 行内代码样式
-  :deep(code) {
-    background-color: rgba(27, 31, 35, 0.05);
-    padding: 0.2em 0.4em;
-    border-radius: 6px;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 14px;
-  }
-}
-
-.edit-header,
-.view-header {
-  margin-bottom: 15px;
 }
 
 .view-header h3 {
-  margin: 0;
   font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 12px;
 }
 
 .view-content-link {

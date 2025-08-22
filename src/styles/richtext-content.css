@@ -1,0 +1,173 @@
+/* 富文本内容通用样式 */
+.richtext-content {
+  line-height: 1.8;
+  color: #333;
+  font-size: 16px;
+}
+
+/* 标题样式 */
+.richtext-content h1,
+.richtext-content h2,
+.richtext-content h3,
+.richtext-content h4,
+.richtext-content h5,
+.richtext-content h6 {
+  margin: 24px 0 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #333;
+}
+
+.richtext-content h1 {
+  font-size: 28px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.richtext-content h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.richtext-content h3 {
+  font-size: 20px;
+}
+
+.richtext-content h4 {
+  font-size: 18px;
+}
+
+.richtext-content h5 {
+  font-size: 16px;
+}
+
+.richtext-content h6 {
+  font-size: 14px;
+}
+
+/* 段落样式 */
+.richtext-content p {
+  margin: 16px 0;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+/* 链接样式 */
+.richtext-content a {
+  color: #007fff;
+  text-decoration: none;
+}
+
+.richtext-content a:hover {
+  text-decoration: underline;
+}
+
+/* 列表样式 */
+.richtext-content ul,
+.richtext-content ol {
+  padding-left: 30px;
+  margin: 16px 0;
+}
+
+.richtext-content ul li,
+.richtext-content ol li {
+  margin: 8px 0;
+}
+
+.richtext-content ul {
+  list-style-type: disc;
+}
+
+.richtext-content ol {
+  list-style-type: decimal;
+}
+
+/* 引用样式 */
+.richtext-content blockquote {
+  margin: 20px 0;
+  padding: 15px 20px;
+  border-left: 4px solid #007fff;
+  background-color: #f8f9fa;
+  color: #666;
+}
+
+.richtext-content blockquote p {
+  margin: 0;
+}
+
+/* 表格样式 */
+.richtext-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.richtext-content table th,
+.richtext-content table td {
+  border: 1px solid #e4e6e8;
+  padding: 12px;
+  text-align: left;
+}
+
+.richtext-content table th {
+  background-color: #f2f3f5;
+  font-weight: 600;
+}
+
+.richtext-content table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.richtext-content table tr:hover {
+  background-color: #eff6ff;
+}
+
+/* 代码块样式 */
+.richtext-content pre {
+  background-color: #2d333b;
+  border-radius: 6px;
+  padding: 16px;
+  overflow: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+.richtext-content pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+  color: #e1e4e8;
+}
+
+/* 行内代码样式 */
+.richtext-content code:not(pre code) {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
+}
+
+/* 图片样式 */
+.richtext-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 20px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+}
+
+/* 分割线 */
+.richtext-content hr {
+  border: none;
+  height: 1px;
+  background-color: #eee;
+  margin: 30px 0;
+}

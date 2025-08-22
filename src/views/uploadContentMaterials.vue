@@ -1,5 +1,4 @@
 <template>
-  <!-- 笔记本容器 -->
   <div class="notepad-container">
     <!-- 标题输入框和按钮 -->
     <div class="title-container">
@@ -12,127 +11,187 @@
         class="title-input"
       />
       <div class="button-group">
-        <Button type="primary" @click="uploadData">上传资料</Button>
+        <Button type="primary" @click="saveData">{{ isEditMode ? '保存编辑' : '上传资料' }}</Button>
         <Button @click="resetEditor">重置</Button>
       </div>
     </div>
+
     <!-- 编辑器容器 -->
     <div class="editor-container">
-      <!-- 富文本编辑器 -->
-      <div ref="editor" class="editor"></div>
+      <Toolbar
+        :editor="editorRef"
+        :defaultConfig="toolbarConfig"
+        mode="default"
+        class="toolbar"
+      />
+      <Editor
+        v-model="editorData"
+        :defaultConfig="editorConfig"
+        mode="default"
+        class="editor"
+        @onCreated="handleCreated"
+        @onChange="handleChange"
+        @onDestroyed="handleDestroyed"
+      />
     </div>
   </div>
 </template>
 
 <script>
-// 导入富文本编辑器wangEditor
-import WangEditor from 'wangeditor'
+import {Editor, Toolbar} from '@wangeditor/editor-for-vue'
 
 export default {
-  // 组件名称
   name: 'uploadContentMaterials',
-  // 组件数据
+  components: {Editor, Toolbar},
   data() {
     return {
-      editor: null,           // 富文本编辑器实例
-      editorData: '',         // 编辑器内容
-      fileTitle: ''          // 资料标题
-    }
-  },
-  // 生命周期钩子：组件挂载完成后初始化编辑器
-  mounted() {
-    this.initEditor()
-  },
-  // 生命周期钩子：组件销毁前销毁编辑器实例
-  beforeDestroy() {
-    if (this.editor) {
-      this.editor.destroy()
-      this.editor = null
-    }
-  },
-  // 组件方法
-  methods: {
-    // 初始化富文本编辑器
-    initEditor() {
-      // 创建wangEditor实例
-      this.editor = new WangEditor(this.$refs.editor)
-      // 配置编辑器高度为600px
-      this.editor.config.height = 600;
-      this.editor.config.zIndex = 100;
-      // 配置编辑器内容变化时的回调函数
-      this.editor.config.onchange = (newHtml) => {
-        this.editorData = newHtml
+      editorRef: null,
+      editorData: '',
+      fileTitle: '',
+      toolbarConfig: {},
+      isEditMode: false,
+      currentEditItem: null,
+      editorConfig: {
+        placeholder: '请输入内容...',
+        height: 600,
+        hoverbarKeys: {
+          image: {
+            menuKeys: [
+              'imageWidth30',
+              'imageWidth50',
+              'imageWidth100',
+              'divider',
+              'editImage',
+              'viewImageLink',
+              'deleteImage'
+            ]
+          }
+        },
+        MENU_CONF: {
+          uploadImage: {
+            customUpload: (file, insertFn) => {
+              const name = file.name
+              const fileObj = new this.$leancloud.File(name, file)
+              fileObj.save().then(res => {
+                const url = res.url()
+                // 使用编辑器API插入节点，确保样式正确应用
+                if (this.editorRef) {
+                  const imgNode = {
+                    type: 'image',
+                    src: url,
+                    style: {
+                      width: '200px',
+                      height: 'auto',
+                      display: 'block',
+                      marginLeft: 'auto',
+                      marginRight: 'auto'
+                    },
+                    children: [{text: ''}]
+                  }
+                  this.editorRef.insertNode(imgNode)
+                } else {
+                  // 备用方案
+                  insertFn(url, '', '', {width: '200px', height: 'auto'})
+                }
+              }).catch(err => {
+                console.error(err)
+                this.$Message.error({message: err.message, duration: 4})
+              })
+            }
+          }
+        }
       }
-      // 创建编辑器
-      this.editor.create()
+    }
+  },
+  created() {
+    const itemId = this.$route.query.id
+    if (itemId) {
+      this.isEditMode = true
+      this.loadEditData(itemId)
+    }
+  },
+  beforeDestroy() {
+    if (this.editorRef) {
+      this.editorRef.destroy()
+      this.editorRef = null
+    }
+  },
+  methods: {
+    async loadEditData(itemId) {
+      try {
+        const query = new this.$leancloud.Query('notepadData')
+        const item = await query.get(itemId)
+        const data = item.toJSON()
+        this.currentEditItem = data
+        this.fileTitle = data.fileTitle
+        this.editorData = data.fileContent
+      } catch (error) {
+        this.$Message.error('加载数据失败: ' + error.message)
+      }
     },
-    /**
-     * 上传数据到LeanCloud
-     * @async
-     * @returns {Promise<void>}
-     */
-    async uploadData() {
-      // 检查标题是否为空
+    handleCreated(editor) {
+      this.editorRef = editor
+    },
+    handleChange(editor) {
+      this.editorData = editor.getHtml()
+    },
+    handleDestroyed(editor) {
+      this.editorRef = null
+    },
+    async saveData() {
       if (!this.fileTitle) {
         this.$Message.warning('标题不能为空')
         return
       }
-
-      // 检查编辑器内容是否为空
       if (!this.editorData) {
         this.$Message.warning('内容不能为空')
         return
       }
-
       try {
-        // 创建LeanCloud数据对象
+        let notepadData
         const NotepadData = this.$leancloud.Object.extend('notepadData')
-        const notepadData = new NotepadData()
-
-        // 生成基于时间戳的唯一ID
-        const fileContentId = Date.now().toString()
-
-        // 设置对象属性（注意：不要手动设置createdAt和updatedAt，因为它们是系统保留字段）
-        notepadData.set('fileContent', this.editorData)  // 将content改为fileContent
-        notepadData.set('fileContentId', fileContentId)  // 添加fileContentId字段
-        notepadData.set('fileTitle', this.fileTitle)    // 添加fileTitle字段
-
-        // 保存到云端（LeanCloud会自动创建createdAt和updatedAt字段）
-        await notepadData.save()
-
-        // 使用$Modal显示成功提示弹窗
+        if (this.isEditMode) {
+          notepadData = new NotepadData()
+          notepadData.id = this.currentEditItem.objectId
+          notepadData.set('fileContent', this.editorData)
+          notepadData.set('fileTitle', this.fileTitle)
+          await notepadData.save()
+        } else {
+          notepadData = new NotepadData()
+          const fileContentId = Date.now().toString()
+          notepadData.set('fileContent', this.editorData)
+          notepadData.set('fileContentId', fileContentId)
+          notepadData.set('fileTitle', this.fileTitle)
+          await notepadData.save()
+        }
+        const title = this.isEditMode ? '编辑成功' : '上传成功'
+        const content = this.isEditMode ? '资料已成功编辑！' : '资料已成功上传！'
         this.$Modal.success({
-          title: '上传成功',
-          content: '资料已成功上传！',
-          onOk: () => {
-            // 点击确定按钮后重置编辑器
-            this.resetEditor()
-          }
+          title,
+          content,
+          onOk: () => this.$router.push('/notepadList')
         })
       } catch (error) {
-        this.$Message.error('上传失败: ' + error.message)
+        this.$Modal.error({
+          title: this.isEditMode ? '编辑失败' : '上传失败',
+          content: error.message
+        })
       }
     },
-    // 重置编辑器内容
     resetEditor() {
-      if (this.editor) {
-        this.editor.txt.clear()
-        this.editorData = ''
-        this.fileTitle = ''
-        this.$Message.info('已重置')
-      }
+      this.editorData = ''
+      this.fileTitle = ''
+      this.$Message.info('已重置')
     }
   }
 }
 </script>
 
 <style scoped>
-/* 笔记本容器样式 */
 .notepad-container {
   padding-top: 20px;
 }
 
-/* 标题容器样式 */
 .title-container {
   padding: 5px 20px;
   display: flex;
@@ -159,14 +218,39 @@ export default {
   margin-right: 10px;
 }
 
-/* 编辑器容器样式 */
 .editor-container {
   padding: 20px;
   background-color: #fff;
 }
 
-/* 编辑器样式 - 设置最小高度为600px */
+.toolbar {
+  border: 1px solid #ccc;
+}
+
 .editor {
-  min-height: 600px;
+  border: 1px solid #ccc;
+  border-top: none;
+  height: 600px;
+}
+</style>
+
+<style>
+/* 全局限制图片宽度并解决选中时的偏移问题 */
+.editor-container img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 10px auto !important;
+}
+
+/* 解决选中图片时的偏移问题 */
+.editor-container .w-e-selected-image_and_video {
+  margin: 10px auto !important;
+  display: block !important;
+  position: static !important;
+}
+
+.editor-container .w-e-selected-image_and_video::selection {
+  background: transparent !important;
 }
 </style>

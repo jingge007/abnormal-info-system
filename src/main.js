@@ -7,6 +7,7 @@ import store from "@/store/store";
 import moment from 'moment';
 import router from "./router"; // 路由
 import 'moment/locale/zh-cn';
+import '@wangeditor/editor/dist/css/style.css'
 import 'windi.css';
 import 'view-design/dist/styles/iview.css';
 import "@/styles/index.less"
