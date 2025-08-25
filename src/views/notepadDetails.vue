@@ -10,17 +10,15 @@
             <Button v-if="isDevelopment" type="primary" @click="goBack" class="back-button">返回列表</Button>
           </div>
         </div>
-
         <div v-if="loading" class="loading">
           <Spin size="large"/>
           <p>加载中...</p>
         </div>
-        <div v-else-if="notepadData" class="blog-content-wrapper">
+        <div v-else-if="notepadData" class="blog-content-wrapper" v-viewer>
           <div class="blog-main-content">
             <article class="richtext-content" v-html="notepadData.fileContent" ref="articleContent"></article>
           </div>
         </div>
-
         <div v-else class="no-data">
           <div class="no-data-content">
             <h3>未找到相关数据</h3>
@@ -29,7 +27,6 @@
           </div>
         </div>
       </div>
-
       <div class="blog-sidebar-outer" v-if="notepadData">
         <div class="sidebar-card">
           <h3 class="sidebar-title">文章信息</h3>

@@ -58,7 +58,8 @@
       <div v-if="currentViewItem" class="view-header">
         <h3>{{ currentViewItem.fileTitle }}</h3>
       </div>
-      <div v-if="currentViewItem" v-html="currentViewItem.fileContent" class="richtext-content view-content" ref="viewContent"></div>
+      <div v-if="currentViewItem" v-viewer
+        v-html="currentViewItem.fileContent" class="richtext-content view-content" ref="viewContent"></div>
       <div slot="footer">
         <Button @click="closeViewModal">关闭</Button>
       </div>
