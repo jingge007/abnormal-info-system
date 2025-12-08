@@ -127,6 +127,21 @@
         <Button type="primary" @click="copyServices">复制选中值</Button>
         <Button style="margin-left: 10px;" @click="resetSelection">重置</Button>
       </FormItem>
+          
+      <!-- 系统前缀快速复制 -->
+      <FormItem label="系统前缀">
+        <div class="prefix-buttons">
+          <Button 
+            v-for="prefix in systemPrefixes" 
+            :key="prefix.value"
+            @click="copyPrefix(prefix.value)" 
+            :type="selectedPrefix === prefix.value ? 'primary' : 'default'"
+            style="margin-right: 10px; margin-bottom: 10px;"
+          >
+            {{ prefix.label }}
+          </Button>
+        </div>
+      </FormItem>
     </Form>
   </div>
 </template>
@@ -139,6 +154,7 @@ export default {
       selectedProject: 'YMS',
       selectedServices: [],
       selectedCategories: [], // 勾选的分类值（通过它来计算 selectedServices）
+      selectedPrefix: '',
       projectList: [
         {label: 'YMS', value: 'YMS'},
         {label: 'VES', value: 'VES'}
@@ -178,7 +194,15 @@ export default {
             {name: 'ves-supplier-static', value: 'ves-supplier-static'}
           ]
         }
-      }
+      },
+      // 系统前缀映射
+      systemPrefixes: [
+        {label: '运营系统', value: 'yms'},
+        {label: '供应商系统', value: 'supplier'},
+        {label: '分销商系统', value: 'distributor'},
+        {label: '商城', value: 'shopping'},
+        {label: '分销商SaaS管理后台', value: 'ymsManagement'}
+      ]
     };
   },
   computed: {
@@ -343,6 +367,12 @@ export default {
         return this.$Message.warning('请先选择打包服务');
       }
       this.$tools.copyText(this.selectedServices.join(',')).then(() => this.$Message.success('复制成功！'));
+    },
+
+    // 复制系统前缀
+    copyPrefix(prefix) {
+      this.selectedPrefix = prefix;
+      this.$tools.copyText(prefix).then(() => this.$Message.success(`「${prefix}」前缀已复制！`));
     },
 
     resetSelection() {
