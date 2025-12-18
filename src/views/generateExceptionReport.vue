@@ -141,6 +141,8 @@ export default {
         {name: 'ERP3.0-客服管理系统', value: 'tongTool-cs'},
         {name: 'ERP3.0-仓储管理系统', value: 'tongTool-wms'},
         {name: 'ERP3.0-数据中心', value: 'tongTool-data-center'},
+
+        {name: 'SaaS-SaaS后台管理系统', value: 'sass'},
       ],
       systemEnvironmentList: [
         {name: 'dev环境', value: 'dev'},
