@@ -55,7 +55,7 @@ const routes = [
           size: '18px'
         }
       },
-      /* {
+      {
         path: '/uploadContentMaterials',
         name: 'uploadContentMaterials',
         component: () => import('@/views/uploadContentMaterials'),
@@ -66,7 +66,7 @@ const routes = [
           icon_size: '18px',
           size: '18px'
         }
-      }, */
+      },
       {
         path: '/notepadList',
         name: 'notepadList',
