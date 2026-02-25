@@ -86,7 +86,7 @@ const routes = [
     name: 'errorReport',
     component: () => import('@/views/errorReport')
   },
-  {
+  /* {
     path: '/generateExternalExceptionReport',
     name: 'generateExternalExceptionReport',
     component: () => import('@/views/generateExceptionReport'),
@@ -98,7 +98,7 @@ const routes = [
       singlePage: true,
       externalMenu: true
     }
-  },
+  }, */
   {
     path: '/notepadDetails',
     name: 'notepadDetails',
