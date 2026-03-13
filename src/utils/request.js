@@ -1,16 +1,14 @@
-// axios请求配置
+// axios 请求配置
 
 import axios from 'axios';
-import { apiConfig } from '@/config/apiConfig';
+import { apiConfig, requestConfig } from '@/config';
 import { showLoading, hideLoading } from '@/utils/loading';
 
-// 创建axios实例
+// 创建 axios 实例
 const service = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: apiConfig.timeout,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  headers: requestConfig.headers
 });
 
 // 请求拦截器
@@ -21,8 +19,8 @@ service.interceptors.request.use(
       // 如果没有传入 loadingText，根据请求方法设置默认值
       const method = config.method || 'GET';
       const defaultLoadingText = ['GET'].includes(method.toUpperCase()) 
-        ? '加载中...' 
-        : '处理中...';
+        ? requestConfig.loading.queryText
+        : requestConfig.loading.mutateText;
       showLoading(config.loadingText || defaultLoadingText);
     }
     return config;
@@ -40,7 +38,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
-    // 隐藏loading
+    // 隐藏 loading
     if (response.config.loading !== false) {
       hideLoading();
     }
@@ -52,7 +50,7 @@ service.interceptors.response.use(
     return data;
   },
   (error) => {
-    // 隐藏loading
+    // 隐藏 loading
     if (error.config && error.config.loading !== false) {
       hideLoading();
     }
@@ -69,10 +67,10 @@ service.interceptors.response.use(
 export async function request(url, options = {}) {
   const { loading = true, loadingText, method = 'GET', ...axiosOptions } = options;
   
-  // 根据请求方法设置默认的loadingText
+  // 根据请求方法设置默认的 loadingText
   const defaultLoadingText = ['GET'].includes(method.toUpperCase()) 
-    ? '加载中...' 
-    : '处理中...';
+    ? requestConfig.loading.queryText
+    : requestConfig.loading.mutateText;
   
   return service({
     url,

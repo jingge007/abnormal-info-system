@@ -1,7 +1,7 @@
 // API 服务封装
 
 import { request, default as service } from '@/utils/request';
-import { apiConfig } from '@/config/apiConfig';
+import { apiConfig } from '@/config';
 
 // 异常报告模块
 export const abnormalReportAPI = {

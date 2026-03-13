@@ -22,7 +22,7 @@
 <script>
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { contentManageAPI, uploadAPI } from '@/utils/api'
-import { uploadConfig } from '@/config/uploadConfig'
+import { uploadConfig } from '@/config'
 
 export default {
   name: 'uploadContentMaterials',
@@ -59,12 +59,21 @@ export default {
                   loading: true,
                   loadingText: '图片上传中...'
                 })
-                const url = response.data.fileUrl
-                // 使用编辑器API插入节点，确保样式正确应用
+                let url = response.data.fileUrl
+                // 处理图片 URL，确保线上能正常显示
+                // 如果 URL 不包含协议，需要添加 https://
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                  url = 'https://' + url
+                }
+                // 添加时间戳参数，避免缓存问题
+                const timestamp = new Date().getTime()
+                const imageUrl = url.includes('?') ? `${url}&t=${timestamp}` : `${url}?t=${timestamp}`
+                
+                // 使用编辑器 API 插入节点，确保样式正确应用
                 if (this.editorRef) {
                   const imgNode = {
                     type: 'image',
-                    src: url,
+                    src: imageUrl,
                     style: {
                       width: '200px',
                       height: 'auto',
@@ -77,7 +86,7 @@ export default {
                   this.editorRef.insertNode(imgNode)
                 } else {
                   // 备用方案
-                  insertFn(url, '', '', { width: '200px', height: 'auto' })
+                  insertFn(imageUrl, '', '', { width: '200px', height: 'auto' })
                 }
               } catch (err) {
                 console.error(err)
