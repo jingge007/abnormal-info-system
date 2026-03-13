@@ -199,13 +199,16 @@ export default {
       v.$refs['pageParams'].validate((valid) => {
         if (valid) {
           for (let key in v.pageParams) {
-            let val = '';
-            if (selectKeyList.includes(key)) {
-              val = handleFun(v.pageParams[key]);
-            } else {
-              val = v.pageParams[key];
+            // 只处理obj对象中存在的键，避免添加undefined
+            if (obj[key]) {
+              let val = '';
+              if (selectKeyList.includes(key)) {
+                val = handleFun(v.pageParams[key]);
+              } else {
+                val = v.pageParams[key];
+              }
+              text += obj[key] + val + '\r\n' + '\r\n';
             }
-            text += obj[key] + val + '\r\n' + '\r\n';
           }
           const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
           // 下载
@@ -213,8 +216,9 @@ export default {
             let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             let name = `错误报告-${timer}`;
             saveAs(blob, `${name}.txt`);
-          } else if (type === 'link') {
-            // 在新窗口中打开展示报错信息
+          }
+          // 生成异常报告
+          else if (type === 'link') {
             v.handleSaveData(v.pageParams).then((id) => {
               if (id) {
                 // 生成异常报告链接
