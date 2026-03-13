@@ -55,7 +55,10 @@ export default {
           uploadImage: {
             customUpload: async (file, insertFn) => {
               try {
-                const response = await uploadAPI.uploadFile(file, uploadConfig.paths.abnormalReport)
+                const response = await uploadAPI.uploadFile(file, uploadConfig.paths.abnormalReport, {
+                  loading: true,
+                  loadingText: '图片上传中...'
+                })
                 const url = response.data.fileUrl
                 // 使用编辑器API插入节点，确保样式正确应用
                 if (this.editorRef) {
