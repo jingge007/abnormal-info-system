@@ -13,7 +13,7 @@
     "@wangeditor/editor-for-vue": "^1.0.2",
     "core-js": "^3.8.3",
     "file-saver": "^2.0.5",
-    "leancloud-storage": "^4.15.0",
+
     "moment": "^2.29.4",
     "prismjs": "^1.30.0",
     "v-viewer": "^1.7.1",

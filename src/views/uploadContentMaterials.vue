@@ -3,13 +3,7 @@
     <!-- 标题输入框和按钮 -->
     <div class="title-container">
       <label class="title-label required-label">内容标题：</label>
-      <Input
-        v-model="fileTitle"
-        placeholder="请输入资料标题（最多50个字）"
-        :maxlength="50"
-        show-word-limit
-        class="title-input"
-      />
+      <Input v-model="fileTitle" placeholder="请输入资料标题（最多50个字）" :maxlength="50" show-word-limit class="title-input" />
       <div class="button-group">
         <Button type="primary" @click="saveData">{{ isEditMode ? '保存编辑' : '上传资料' }}</Button>
         <Button @click="resetEditor">重置</Button>
@@ -18,31 +12,21 @@
 
     <!-- 编辑器容器 -->
     <div class="editor-container">
-      <Toolbar
-        :editor="editorRef"
-        :defaultConfig="toolbarConfig"
-        mode="default"
-        class="toolbar"
-      />
-      <Editor
-        v-model="editorData"
-        :defaultConfig="editorConfig"
-        mode="default"
-        class="editor"
-        @onCreated="handleCreated"
-        @onChange="handleChange"
-        @onDestroyed="handleDestroyed"
-      />
+      <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" mode="default" class="toolbar" />
+      <Editor v-model="editorData" :defaultConfig="editorConfig" mode="default" class="editor"
+        @onCreated="handleCreated" @onChange="handleChange" @onDestroyed="handleDestroyed" />
     </div>
   </div>
 </template>
 
 <script>
-import {Editor, Toolbar} from '@wangeditor/editor-for-vue'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { contentManageAPI, uploadAPI } from '@/utils/api'
+import { uploadConfig } from '@/config/uploadConfig'
 
 export default {
   name: 'uploadContentMaterials',
-  components: {Editor, Toolbar},
+  components: { Editor, Toolbar },
   data() {
     return {
       editorRef: null,
@@ -69,11 +53,10 @@ export default {
         },
         MENU_CONF: {
           uploadImage: {
-            customUpload: (file, insertFn) => {
-              const name = file.name
-              const fileObj = new this.$leancloud.File(name, file)
-              fileObj.save().then(res => {
-                const url = res.url()
+            customUpload: async (file, insertFn) => {
+              try {
+                const response = await uploadAPI.uploadFile(file, uploadConfig.paths.abnormalReport)
+                const url = response.data.fileUrl
                 // 使用编辑器API插入节点，确保样式正确应用
                 if (this.editorRef) {
                   const imgNode = {
@@ -86,17 +69,17 @@ export default {
                       marginLeft: 'auto',
                       marginRight: 'auto'
                     },
-                    children: [{text: ''}]
+                    children: [{ text: '' }]
                   }
                   this.editorRef.insertNode(imgNode)
                 } else {
                   // 备用方案
-                  insertFn(url, '', '', {width: '200px', height: 'auto'})
+                  insertFn(url, '', '', { width: '200px', height: 'auto' })
                 }
-              }).catch(err => {
+              } catch (err) {
                 console.error(err)
-                this.$Message.error({message: err.message, duration: 4})
-              })
+                this.$Message.error({ message: err.message || '上传失败', duration: 4 })
+              }
             }
           }
         }
@@ -119,9 +102,8 @@ export default {
   methods: {
     async loadEditData(itemId) {
       try {
-        const query = new this.$leancloud.Query('notepadData')
-        const item = await query.get(itemId)
-        const data = item.toJSON()
+        const response = await contentManageAPI.getDetail(itemId)
+        const data = response.data
         this.currentEditItem = data
         this.fileTitle = data.fileTitle
         this.editorData = data.fileContent
@@ -148,21 +130,17 @@ export default {
         return
       }
       try {
-        let notepadData
-        const NotepadData = this.$leancloud.Object.extend('notepadData')
         if (this.isEditMode) {
-          notepadData = new NotepadData()
-          notepadData.id = this.currentEditItem.objectId
-          notepadData.set('fileContent', this.editorData)
-          notepadData.set('fileTitle', this.fileTitle)
-          await notepadData.save()
+          await contentManageAPI.updateNotepad({
+            fileContentId: this.currentEditItem.fileContentId,
+            fileTitle: this.fileTitle,
+            fileContent: this.editorData
+          })
         } else {
-          notepadData = new NotepadData()
-          const fileContentId = Date.now().toString()
-          notepadData.set('fileContent', this.editorData)
-          notepadData.set('fileContentId', fileContentId)
-          notepadData.set('fileTitle', this.fileTitle)
-          await notepadData.save()
+          await contentManageAPI.addNotepad({
+            fileTitle: this.fileTitle,
+            fileContent: this.editorData
+          })
         }
         const title = this.isEditMode ? '编辑成功' : '上传成功'
         const content = this.isEditMode ? '资料已成功编辑！' : '资料已成功上传！'

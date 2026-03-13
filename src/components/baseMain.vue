@@ -15,13 +15,15 @@
 <style lang="less" scoped>
 .layout {
   .layout_content_box {
+    width: 100%;
     display: flex;
     flex-direction: row;
 
     .layout_center_box {
       display: flex;
       flex-direction: column;
-      flex: auto;
+      overflow-x: hidden;
+      flex: 1;
 
       .content_box {
         margin: 75px 20px 20px 20px;
@@ -39,9 +41,7 @@ import baseSidebar from "@/components/baseSidebar";
 
 export default {
   data() {
-    return {
-
-    };
+    return {};
   },
   components: {
     baseHeader,

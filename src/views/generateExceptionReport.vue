@@ -3,77 +3,65 @@
     <Form ref="pageParams" :model="pageParams" :label-width="120" :rules="ruleValidate" @submit.native.prevent>
       <Row type="flex" :gutter="16">
         <Col :span="threeItemCol">
-          <FormItem label="所在系统：" prop="system">
-            <Select v-model="pageParams.system" filterable transfer size="large">
-              <Option v-for="item in systemList" :key="item.value" :value="item.value">{{ item.name }}</Option>
-            </Select>
-          </FormItem>
+        <FormItem label="所在系统：" prop="system">
+          <Select v-model="pageParams.system" filterable transfer size="large">
+            <Option v-for="item in systemList" :key="item.value" :value="item.value">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         </Col>
         <Col :span="threeItemCol">
-          <FormItem label="系统环境：" prop="systemEnvironment">
-            <Select v-model="pageParams.systemEnvironment" transfer size="large">
-              <Option v-for="item in systemEnvironmentList" :key="item.value" :value="item.value">{{ item.name }}</Option>
-            </Select>
-          </FormItem>
+        <FormItem label="系统环境：" prop="systemEnvironment">
+          <Select v-model="pageParams.systemEnvironment" transfer size="large">
+            <Option v-for="item in systemEnvironmentList" :key="item.value" :value="item.value">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         </Col>
         <Col :span="threeItemCol">
-          <FormItem label="请求方式：" prop="method">
-            <Select v-model="pageParams.method" transfer size="large">
-              <Option v-for="item in methodList" :key="item.value" :value="item.value">{{ item.name }}</Option>
-            </Select>
-          </FormItem>
+        <FormItem label="请求方式：" prop="method">
+          <Select v-model="pageParams.method" transfer size="large">
+            <Option v-for="item in methodList" :key="item.value" :value="item.value">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="报错接口：" prop="errorReportingInterface">
-            <Input
-              type="textarea"
-              size="large"
-              :autosize="{ minRows: 2, maxRows: 4}"
-              v-model.trim="pageParams.errorReportingInterface">
-            </Input>
-          </FormItem>
+        <FormItem label="报错接口：" prop="errorReportingInterface">
+          <Input type="textarea" size="large" :autosize="{ minRows: 2, maxRows: 4 }"
+            v-model.trim="pageParams.errorReportingInterface">
+          </Input>
+        </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="接口入參：" prop="enteringGinseng">
-            <Input
-              type="textarea"
-              size="large"
-              :autosize="{ minRows: 3, maxRows: 5}"
-              v-model.trim="pageParams.enteringGinseng">
-            </Input>
-          </FormItem>
+        <FormItem label="接口入參：" prop="enteringGinseng">
+          <Input type="textarea" size="large" :autosize="{ minRows: 3, maxRows: 5 }"
+            v-model.trim="pageParams.enteringGinseng">
+          </Input>
+        </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="相关备注：" prop="remarks">
-            <Input
-              type="textarea"
-              size="large"
-              :autosize="{ minRows: 3, maxRows: 5}"
-              v-model.trim="pageParams.remarks">
-            </Input>
-          </FormItem>
+        <FormItem label="相关备注：" prop="remarks">
+          <Input type="textarea" size="large" :autosize="{ minRows: 3, maxRows: 5 }" v-model.trim="pageParams.remarks">
+          </Input>
+        </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="报错信息：" prop="errorMessage">
-            <Input
-              size="large"
-              type="textarea"
-              :autosize="{ minRows: 10, maxRows: 14}"
-              v-model.trim="pageParams.errorMessage">
-            </Input>
-          </FormItem>
+        <FormItem label="报错信息：" prop="errorMessage">
+          <Input size="large" type="textarea" :autosize="{ minRows: 10, maxRows: 14 }"
+            v-model.trim="pageParams.errorMessage">
+          </Input>
+        </FormItem>
         </Col>
         <Col :span="itemCol">
-          <FormItem label="controller转换：" prop="controllerValue">
+        <FormItem label="controller转换：" prop="controllerValue">
+          <div style="display: flex; align-items: center;">
+            <Input size="large" v-model.trim="pageParams.controllerValue" @on-enter="enterChange"
+              style="width:45%;"></Input>
             <div style="display: flex; align-items: center;">
-              <Input size="large" v-model.trim="pageParams.controllerValue" @on-enter="enterChange" style="width:45%;"></Input>
-              <div style="display: flex; align-items: center;">
-                <span style="margin-left: 20px; margin-right: 8px;">{{ '转换值：' + conversionValue }}</span>
-                <Icon v-if="conversionValue" title="一键复制内容" size="20" style="cursor: pointer;"
-                  type="md-copy" @click="copyContentBtn(conversionValue, true)"/>
-              </div>
+              <span style="margin-left: 20px; margin-right: 8px;">{{ '转换值：' + conversionValue }}</span>
+              <Icon v-if="conversionValue" title="一键复制内容" size="20" style="cursor: pointer;" type="md-copy"
+                @click="copyContentBtn(conversionValue, true)" />
             </div>
-          </FormItem>
+          </div>
+        </FormItem>
         </Col>
       </Row>
     </Form>
@@ -87,7 +75,8 @@
 </template>
 
 <script>
-import {saveAs} from 'file-saver';
+import { saveAs } from 'file-saver';
+import { abnormalReportAPI } from '@/utils/api';
 
 export default {
   name: 'generateExceptionReport',
@@ -109,69 +98,69 @@ export default {
       },
       ruleValidate: {
         system: [
-          {required: true, message: '请选择系统', trigger: 'change'}
+          { required: true, message: '请选择系统', trigger: 'change' }
         ],
         systemEnvironment: [
-          {required: true, message: '请选择系统环境', trigger: 'change'}
+          { required: true, message: '请选择系统环境', trigger: 'change' }
         ],
         method: [
-          {required: true, message: '请选择请求方式', trigger: 'change'}
+          { required: true, message: '请选择请求方式', trigger: 'change' }
         ],
         errorReportingInterface: [
-          {required: true, message: '报错接口不能为空', trigger: 'blur'}
+          { required: true, message: '报错接口不能为空', trigger: 'blur' }
         ],
         errorMessage: [
-          {required: true, message: '报错信息不能为空', trigger: 'blur'}
+          { required: true, message: '报错信息不能为空', trigger: 'blur' }
         ]
       },
       systemList: [
-        {name: 'YMS-运营系统', value: 'yms'},
-        {name: 'YMS-供应商系统', value: 'supplier'},
-        {name: 'YMS-分销商系统', value: 'distributor'},
-        {name: 'YMS-商城', value: 'shopping'},
+        { name: 'YMS-运营系统', value: 'yms' },
+        { name: 'YMS-供应商系统', value: 'supplier' },
+        { name: 'YMS-分销商系统', value: 'distributor' },
+        { name: 'YMS-商城', value: 'shopping' },
 
-        {name: 'VES-运营系统', value: 'vesYms'},
-        {name: 'VES-供应商系统', value: 'vesSupplier'},
+        { name: 'VES-运营系统', value: 'vesYms' },
+        { name: 'VES-供应商系统', value: 'vesSupplier' },
 
-        {name: 'ERP3.0-设置中心', value: 'tongTool-setting'},
-        {name: 'ERP3.0-新品开发系统', value: 'tongTool-pds'},
-        {name: 'ERP3.0-订单处理系统', value: 'tongTool-order'},
-        {name: 'ERP3.0-商品管理系统', value: 'tongTool-product'},
-        {name: 'ERP3.0-供应商采购系统', value: 'tongTool-sps'},
-        {name: 'ERP3.0-客服管理系统', value: 'tongTool-cs'},
-        {name: 'ERP3.0-仓储管理系统', value: 'tongTool-wms'},
-        {name: 'ERP3.0-数据中心', value: 'tongTool-data-center'},
+        { name: 'ERP3.0-设置中心', value: 'tongTool-setting' },
+        { name: 'ERP3.0-新品开发系统', value: 'tongTool-pds' },
+        { name: 'ERP3.0-订单处理系统', value: 'tongTool-order' },
+        { name: 'ERP3.0-商品管理系统', value: 'tongTool-product' },
+        { name: 'ERP3.0-供应商采购系统', value: 'tongTool-sps' },
+        { name: 'ERP3.0-客服管理系统', value: 'tongTool-cs' },
+        { name: 'ERP3.0-仓储管理系统', value: 'tongTool-wms' },
+        { name: 'ERP3.0-数据中心', value: 'tongTool-data-center' },
 
-        {name: 'SaaS-SaaS后台管理系统', value: 'sass'},
+        { name: 'SaaS-SaaS后台管理系统', value: 'sass' },
       ],
       systemEnvironmentList: [
-        {name: 'dev环境', value: 'dev'},
-        {name: 'test环境', value: 'test'},
-        {name: 'uat环境', value: 'uat'},
-        {name: 'staging环境', value: 'staging'}
+        { name: 'dev环境', value: 'dev' },
+        { name: 'test环境', value: 'test' },
+        { name: 'uat环境', value: 'uat' },
+        { name: 'staging环境', value: 'staging' }
       ],
       methodList: [
-        {name: 'GET请求', value: 'get'},
-        {name: 'POST请求', value: 'post'},
-        {name: 'PUT请求', value: 'put'},
-        {name: 'DELETE请求', value: 'delete'},
+        { name: 'GET请求', value: 'get' },
+        { name: 'POST请求', value: 'post' },
+        { name: 'PUT请求', value: 'put' },
+        { name: 'DELETE请求', value: 'delete' },
       ],
       conversionValue: '',
       packagedServiceList: [
-        {name: 'yms-compiler', value: 'yms-compiler'},
-        {name: 'yms-core-compiler', value: 'yms-core-compiler'},
-        {name: 'yms-core-controller', value: 'yms-core-controller'},
-        {name: 'yms-core-service', value: 'yms-core-service'},
-        {name: 'yms-core-static', value: 'yms-core-static'},
-        {name: 'yms-distributor-compiler', value: 'yms-distributor-compiler'},
-        {name: 'yms-distributor-controller', value: 'yms-distributor-controller'},
-        {name: 'yms-distributor-service', value: 'yms-distributor-service'},
-        {name: 'yms-distributor-static', value: 'yms-distributor-static'},
-        {name: 'yms-shopping-static', value: 'yms-shopping-static'},
-        {name: 'yms-supplier-compiler', value: 'yms-supplier-compiler'},
-        {name: 'yms-supplier-controller', value: 'yms-supplier-controller'},
-        {name: 'yms-supplier-service', value: 'yms-supplier-service'},
-        {name: 'yms-supplier-static', value: 'yms-supplier-static'}
+        { name: 'yms-compiler', value: 'yms-compiler' },
+        { name: 'yms-core-compiler', value: 'yms-core-compiler' },
+        { name: 'yms-core-controller', value: 'yms-core-controller' },
+        { name: 'yms-core-service', value: 'yms-core-service' },
+        { name: 'yms-core-static', value: 'yms-core-static' },
+        { name: 'yms-distributor-compiler', value: 'yms-distributor-compiler' },
+        { name: 'yms-distributor-controller', value: 'yms-distributor-controller' },
+        { name: 'yms-distributor-service', value: 'yms-distributor-service' },
+        { name: 'yms-distributor-static', value: 'yms-distributor-static' },
+        { name: 'yms-shopping-static', value: 'yms-shopping-static' },
+        { name: 'yms-supplier-compiler', value: 'yms-supplier-compiler' },
+        { name: 'yms-supplier-controller', value: 'yms-supplier-controller' },
+        { name: 'yms-supplier-service', value: 'yms-supplier-service' },
+        { name: 'yms-supplier-static', value: 'yms-supplier-static' }
       ],
     }
   },
@@ -218,7 +207,7 @@ export default {
             }
             text += obj[key] + val + '\r\n' + '\r\n';
           }
-          const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+          const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
           // 下载
           if (type === 'download') {
             let timer = v.$moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -246,24 +235,19 @@ export default {
         }
       });
     },
-    // 将错误信息保存数据对象到LeanCloud云端
+    // 将错误信息保存到API服务
     handleSaveData(pageParams) {
       let v = this;
-      return new Promise((resolve) => {
-        const AbnormalList = v.$leancloud.Object.extend('abnormalList');
-        const abnormalList = new AbnormalList();
-        let keyList = ['system', 'systemEnvironment', 'method', 'errorReportingInterface', 'enteringGinseng', 'remarks', 'errorMessage'];
-        for (let key in pageParams) {
-          if (keyList.includes(key)) {
-            abnormalList.set(key, pageParams[key]);
-          }
-        }
-        abnormalList.save().then((data) => {
-          let id = data.id;
+      return new Promise(async (resolve) => {
+        try {
+          const response = await abnormalReportAPI.generateReport(pageParams);
+          let id = response.data.exceptionReportId;
           resolve(id);
-        }).catch((error) => {
+        } catch (error) {
           console.error('错误信息', error);
-        });
+          v.$Message.error('生成异常报告失败，请重试');
+          resolve(null);
+        }
       })
     },
     // 生成异常错误报告
@@ -271,7 +255,7 @@ export default {
       let v = this;
       v.handleSaveData(pageParams).then((id) => {
         if (id) {
-          const {href} = v.$router.resolve({
+          const { href } = v.$router.resolve({
             path: '/errorReport',
             query: {
               id: id

@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import viewDesign from 'view-design';
 import Vuex from 'vuex';
-import leancloud from "@/plugins/leancloud";
 import store from "@/store/store";
 import moment from 'moment';
 import router from "./router"; // 路由
@@ -50,7 +49,6 @@ Viewer.setDefaults({
 Vue.prototype.$tools = tools;
 Vue.use(components);
 Vue.use(MomentPlugin);
-Vue.use(leancloud);
 Vue.use(Vuex);
 Vue.use(Viewer); // 使用 v-viewer 插件
 

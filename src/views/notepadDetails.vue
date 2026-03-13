@@ -11,7 +11,7 @@
           </div>
         </div>
         <div v-if="loading" class="loading">
-          <Spin size="large"/>
+          <Spin size="large" />
           <p>加载中...</p>
         </div>
         <div v-else-if="notepadData" class="blog-content-wrapper" v-viewer>
@@ -50,7 +50,8 @@
 
 <script>
 import Browser from '@/utils/tools.js'
-import {highlightCode} from '@/utils/prismConfig.js'
+import { highlightCode } from '@/utils/prismConfig.js'
+import { contentManageAPI } from '@/utils/api'
 
 export default {
   name: 'notepadDetails',
@@ -78,16 +79,15 @@ export default {
   methods: {
     // 获取记事本数据
     async fetchNotepadData() {
-      const objectId = this.$route.query.id;
-      if (!objectId) {
+      const fileContentId = this.$route.query.id;
+      if (!fileContentId) {
         this.loading = false;
         return;
       }
 
       try {
-        const query = new this.$leancloud.Query('notepadData');
-        const result = await query.get(objectId);
-        const data = result.toJSON();
+        const response = await contentManageAPI.getDetail(fileContentId);
+        const data = response.data;
 
         this.notepadData = {
           ...data,

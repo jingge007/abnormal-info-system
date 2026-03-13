@@ -2,12 +2,7 @@
   <div class="container_box">
     <div class="flex justify-between">
       <div class="search-box">
-        <Input
-          v-model="searchTitle"
-          placeholder="请输入标题搜索..."
-          style="width: 300px;"
-          @on-enter="handleSearch"
-        />
+        <Input v-model="searchTitle" placeholder="请输入标题搜索..." style="width: 300px;" @on-enter="handleSearch" />
         <Button type="primary" @click="handleSearch" style="margin-left: 10px;">搜索</Button>
         <Button @click="resetSearch" style="margin-left: 10px;">重置</Button>
       </div>
@@ -16,13 +11,7 @@
         <Button type="error" @click="batchDelete" :disabled="selectedRows.length === 0">批量删除</Button>
       </div>
     </div>
-    <Table
-      :columns="columns"
-      :data="notepadList"
-      @on-selection-change="handleSelectionChange"
-      border
-      ref="table"
-    >
+    <Table :columns="columns" :max-height="650" :data="notepadList" @on-selection-change="handleSelectionChange" border ref="table">
       <template #content="{ row }">
         <span class="view-content-link" @click="viewItem(row)">查看内容</span>
       </template>
@@ -34,32 +23,18 @@
       </template>
     </Table>
 
-    <Page
-      :total="total"
-      :page-size="pageSize"
-      :current="currentPage"
-      @on-change="handlePageChange"
-      @on-page-size-change="handlePageSizeChange"
-      show-sizer
-      show-elevator
-      show-total
-      style="margin-top: 20px; text-align: right;"
-    />
+    <Page :total="total" :page-size="pageSize" :current="currentPage" @on-change="handlePageChange"
+      @on-page-size-change="handlePageSizeChange" show-sizer show-elevator show-total
+      style="margin-top: 20px; text-align: right;" />
 
     <!-- 查看弹窗 -->
-    <Modal
-      v-model="showViewModal"
-      title="查看内容"
-      width="1200"
-      :styles="{top: '30px'}"
-      @on-cancel="cancelView"
-      @on-visible-change="onModalVisibleChange"
-    >
+    <Modal v-model="showViewModal" title="查看内容" width="1200" :styles="{ top: '30px' }" @on-cancel="cancelView"
+      @on-visible-change="onModalVisibleChange">
       <div v-if="currentViewItem" class="view-header">
         <h3>{{ currentViewItem.fileTitle }}</h3>
       </div>
-      <div v-if="currentViewItem" v-viewer
-        v-html="currentViewItem.fileContent" class="richtext-content view-content" ref="viewContent"></div>
+      <div v-if="currentViewItem" v-viewer v-html="currentViewItem.fileContent" class="richtext-content view-content"
+        ref="viewContent"></div>
       <div slot="footer">
         <Button @click="closeViewModal">关闭</Button>
       </div>
@@ -69,7 +44,8 @@
 
 <script>
 import Browser from '@/utils/tools.js'
-import {highlightCode} from '@/utils/prismConfig.js'
+import { highlightCode } from '@/utils/prismConfig.js'
+import { contentManageAPI } from '@/utils/api'
 
 export default {
   name: 'notepadList',
@@ -132,33 +108,18 @@ export default {
     // 获取记事本列表数据
     async fetchNotepadList() {
       try {
-        const query = new this.$leancloud.Query('notepadData')
-        query.descending('createdAt') // 按创建时间倒序排列
+        const response = await contentManageAPI.getList({
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          fileTitle: this.searchTitle
+        })
 
-        // 如果有搜索关键词，则添加标题匹配条件
-        if (this.searchTitle) {
-          query.contains('fileTitle', this.searchTitle)
-        }
-
-        // 设置分页
-        query.limit(this.pageSize)
-        query.skip((this.currentPage - 1) * this.pageSize)
-
-        const results = await query.find()
-
-        // 获取总数
-        const countQuery = new this.$leancloud.Query('notepadData')
-        if (this.searchTitle) {
-          countQuery.contains('fileTitle', this.searchTitle)
-        }
-        this.total = await countQuery.count()
-
-        this.notepadList = results.map(item => {
-          const data = item.toJSON()
+        this.total = response.data.total
+        this.notepadList = response.data.list.map(item => {
           return {
-            ...data,
-            createdAt: Browser.formatDate(new Date(data.createdAt)),
-            updatedAt: Browser.formatDate(new Date(data.updatedAt))
+            ...item,
+            createdAt: Browser.formatDate(new Date(item.createdAt)),
+            updatedAt: Browser.formatDate(new Date(item.updatedAt))
           }
         })
       } catch (error) {
@@ -186,7 +147,7 @@ export default {
     viewDetailsInNewWindow(row) {
       const routeData = this.$router.resolve({
         name: 'notepadDetails',
-        query: {id: row.objectId}
+        query: { id: row.fileContentId }
       });
       window.open(routeData.href, '_blank');
     },
@@ -205,7 +166,7 @@ export default {
     async copyAddress(row) {
       const url = window.location.origin + this.$router.resolve({
         name: 'notepadDetails',
-        query: {id: row.objectId}
+        query: { id: row.fileContentId }
       }).href;
 
       try {
@@ -221,7 +182,7 @@ export default {
       // 跳转到上传页面进行编辑，传递要编辑的项目ID
       this.$router.push({
         name: 'uploadContentMaterials',
-        query: {id: row.objectId}
+        query: { id: row.fileContentId }
       });
     },
 
@@ -253,12 +214,7 @@ export default {
         content: '确定要删除这条记录吗？',
         onOk: async () => {
           try {
-            // 直接删除数据库记录（不尝试删除文件，因为权限不足）
-            const NotepadData = this.$leancloud.Object.extend('notepadData')
-            const notepadData = new NotepadData()
-            notepadData.id = row.objectId
-
-            await notepadData.destroy()
+            await contentManageAPI.deleteNotepad(row.fileContentId)
             this.$Message.success('删除成功')
             this.fetchNotepadList() // 重新获取列表数据
           } catch (error) {
@@ -275,19 +231,13 @@ export default {
         content: `确定要删除选中的${this.selectedRows.length}条记录吗？`,
         onOk: async () => {
           try {
-            // 直接删除数据库记录（不尝试删除文件，因为权限不足）
-            const objectsToDelete = this.selectedRows.map(row => {
-              const NotepadData = this.$leancloud.Object.extend('notepadData')
-              const notepadData = new NotepadData()
-              notepadData.id = row.objectId
-              return notepadData
-            })
-
-            await this.$leancloud.Object.destroyAll(objectsToDelete)
-            this.$Message.success('批量删除成功')
-            this.fetchNotepadList() // 重新获取列表数据
+            // 批量删除记录
+            const fileContentIds = this.selectedRows.map(row => row.fileContentId);
+            await contentManageAPI.batchDeleteNotepad(fileContentIds);
+            this.$Message.success('批量删除成功');
+            this.fetchNotepadList(); // 重新获取列表数据
           } catch (error) {
-            this.$Message.error('批量删除失败: ' + error.message)
+            this.$Message.error('批量删除失败: ' + error.message);
           }
         }
       })

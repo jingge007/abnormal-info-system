@@ -44,6 +44,31 @@ const routes = [
         }
       },
       {
+        path: '/abnormalReportList',
+        name: 'abnormalReportList',
+        component: () => import('@/views/abnormalReportList'),
+        meta: {
+          title: '异常报告列表',
+          icon: 'icon-DataError-WFsvg-fengxian',
+          singlePage: true,
+          icon_size: '18px',
+          size: '18px'
+        }
+      },
+      {
+        path: '/generateExternalExceptionReport',
+        name: 'generateExternalExceptionReport',
+        component: () => import('@/views/generateExceptionReport'),
+        meta: {
+          title: '生成外部异常报告',
+          icon: 'icon-waibubaogao',
+          icon_size: '21px',
+          size: '21px',
+          singlePage: true,
+          externalMenu: true
+        }
+      },
+      {
         path: '/packagedService',
         name: 'packagedService',
         component: () => import('@/views/packagedService'),
@@ -85,19 +110,6 @@ const routes = [
     path: '/errorReport',
     name: 'errorReport',
     component: () => import('@/views/errorReport')
-  },
-  {
-    path: '/generateExternalExceptionReport',
-    name: 'generateExternalExceptionReport',
-    component: () => import('@/views/generateExceptionReport'),
-    meta: {
-      title: '生成外部异常报告',
-      icon: 'icon-waibubaogao',
-      icon_size: '21px',
-      size: '21px',
-      singlePage: true,
-      externalMenu: true
-    }
   },
   {
     path: '/notepadDetails',

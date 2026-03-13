@@ -9,11 +9,13 @@
           <template v-if="optionskeyList.includes(item.paramsKey)">
             <div class="content_item_box">
               <div class="options_box">
-                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
+                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy"
+                  @click="copyContentBtn(item.paramsKey)" />
               </div>
               <div class="content" v-if="item.paramsValue">
                 <template v-if="item.isJSON">
-                  <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25"></jsonView>
+                  <jsonView :data="item.paramsValue" :deep="5" theme="vs-code" :font-size="16" :line-height="25">
+                  </jsonView>
                 </template>
                 <template v-else>
                   <div class="content">
@@ -26,11 +28,13 @@
           <template v-else>
             <div class="content_item_box">
               <div class="options_box" v-if="['errorReportingInterface'].includes(item.paramsKey)">
-                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy" @click="copyContentBtn(item.paramsKey)"/>
+                <Icon title="一键复制内容" size="20" class="copyIcon" type="md-copy"
+                  @click="copyContentBtn(item.paramsKey)" />
               </div>
-              <div class="content" :class="item.paramsKey === 'errorReportingInterface' ? 'setSizeStyle': ''">
+              <div class="content" :class="item.paramsKey === 'errorReportingInterface' ? 'setSizeStyle' : ''">
                 <template v-if="'errorReportingInterface' === item.paramsKey">
-                  <Tag :color="handleStyle('color')" size="large" class="font-size-14 mr10">{{ handleStyle('text') }}</Tag>
+                  <Tag :color="handleStyle('color')" size="large" class="font-size-14 mr10">{{ handleStyle('text') }}
+                  </Tag>
                   <span>{{ item.paramsValue }}</span>
                 </template>
                 <template v-else>
@@ -47,6 +51,7 @@
 
 <script>
 import jsonView from 'vue-json-views'
+import { abnormalReportAPI } from '@/utils/api'
 
 export default {
   name: "errorReport",
@@ -57,12 +62,12 @@ export default {
       systemEnvironmentTitle: '',
       detailsInfo: {},
       errorReportList: [
-        {title: '所在系统：', paramsKey: 'system', paramsValue: ''},
-        {title: '系统环境：', paramsKey: 'systemEnvironment', paramsValue: ''},
-        {title: '报错接口：', paramsKey: 'errorReportingInterface', paramsValue: ''},
-        {title: '接口入參：', paramsKey: 'enteringGinseng', paramsValue: ''},
-        {title: '相关备注：', paramsKey: 'remarks', paramsValue: ''},
-        {title: '报错信息：', paramsKey: 'errorMessage', paramsValue: ''},
+        { title: '所在系统：', paramsKey: 'system', paramsValue: '' },
+        { title: '系统环境：', paramsKey: 'systemEnvironment', paramsValue: '' },
+        { title: '报错接口：', paramsKey: 'errorReportingInterface', paramsValue: '' },
+        { title: '接口入參：', paramsKey: 'enteringGinseng', paramsValue: '' },
+        { title: '相关备注：', paramsKey: 'remarks', paramsValue: '' },
+        { title: '报错信息：', paramsKey: 'errorMessage', paramsValue: '' },
       ],
       optionskeyList: ['enteringGinseng', 'errorMessage'],
       systemObj: {
@@ -129,18 +134,19 @@ export default {
       } else {
         val = this.detailsInfo[type];
       }
-      this.$tools.copyText(val).then(()=> {
+      this.$tools.copyText(val).then(() => {
         this.$Message.success('复制成功！');
       });
     },
     // 获取错误信息
-    getErrorData() {
+    async getErrorData() {
       let v = this;
       let id = v.$route.query.id;
       if (id) {
-        const query = new v.$leancloud.Query("abnormalList");
-        query.get(id).then((data) => {
-          let obj = data.toJSON();
+        try {
+          // 假设 API 服务提供了获取异常报告详情的方法
+          const response = await abnormalReportAPI.getReportDetail(id);
+          let obj = response.data;
           v.detailsInfo = JSON.parse(JSON.stringify(obj));
           if (Object.keys(obj).length > 0) {
             v.errorReportList.map((item) => {
@@ -168,7 +174,10 @@ export default {
             });
             v.$forceUpdate();
           }
-        });
+        } catch (error) {
+          console.error('获取错误信息失败:', error);
+          v.$Message.error('获取错误信息失败，请重试');
+        }
       }
     }
   },
