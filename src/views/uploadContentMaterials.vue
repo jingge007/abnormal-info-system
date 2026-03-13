@@ -38,20 +38,18 @@ export default {
       editorConfig: {
         placeholder: '请输入内容...',
         height: 600,
-        hoverbarKeys: {
-          image: {
-            menuKeys: [
-              'imageWidth30',
-              'imageWidth50',
-              'imageWidth100',
-              'divider',
-              'editImage',
-              'viewImageLink',
-              'deleteImage'
-            ]
-          }
-        },
+        // 配置图片白名单，允许外部域名图片
+        dangerouslyHTML: true,
+        // 合并所有 MENU_CONF 配置
         MENU_CONF: {
+          // 图片检查配置
+          image: {
+            checkImageSrc: (src) => {
+              // 允许所有图片链接
+              return true
+            }
+          },
+          // 图片上传配置
           uploadImage: {
             customUpload: async (file, insertFn) => {
               try {
@@ -93,6 +91,19 @@ export default {
                 this.$Message.error({ message: err.message || '上传失败', duration: 4 })
               }
             }
+          }
+        },
+        hoverbarKeys: {
+          image: {
+            menuKeys: [
+              'imageWidth30',
+              'imageWidth50',
+              'imageWidth100',
+              'divider',
+              'editImage',
+              'viewImageLink',
+              'deleteImage'
+            ]
           }
         }
       }

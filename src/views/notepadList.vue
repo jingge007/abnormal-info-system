@@ -69,7 +69,7 @@ export default {
         {
           title: 'ID',
           key: 'fileContentId',
-          minWidth: 130
+          minWidth: 140
         },
         {
           title: '标题',
@@ -95,7 +95,7 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          minWidth: 300,
+          minWidth: 280,
           align: 'center'
         }
       ]
