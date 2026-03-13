@@ -215,7 +215,27 @@ export default {
             saveAs(blob, `${name}.txt`);
           } else if (type === 'link') {
             // 在新窗口中打开展示报错信息
-            v.generateExceptionReport(v.pageParams);
+            v.handleSaveData(v.pageParams).then((id) => {
+              if (id) {
+                // 生成异常报告链接
+                let path = '';
+                let origin = window.location.origin;
+                if (origin.includes('localhost')) {
+                  path = `http://localhost:8080/#/errorReport?id=${id}`
+                } else {
+                  path = `https://abnormal-info-system.taicisou.cn/#/errorReport?id=${id}`
+                }
+                // 复制链接
+                v.$tools.copyText(path).then(() => {
+                  v.$Message.success('异常报告链接已复制！');
+                  // 延迟3秒后自动重置数据
+                  setTimeout(() => {
+                    v.resetBtn();
+                    v.$Message.info('数据已自动重置');
+                  }, 3000);
+                });
+              }
+            });
           }
           // 复制
           else {

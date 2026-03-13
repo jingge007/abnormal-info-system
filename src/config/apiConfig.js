@@ -1,7 +1,7 @@
 // API配置
 export const apiConfig = {
   // API基础路径
-  baseURL: '/api',
+  baseURL: 'https://unicloud-api.taicisou.cn',
   // 请求超时时间（毫秒）
   timeout: 120000,
   // API端点配置
