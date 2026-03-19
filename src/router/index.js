@@ -56,19 +56,6 @@ const routes = [
         }
       },
       {
-        path: '/generateExternalExceptionReport',
-        name: 'generateExternalExceptionReport',
-        component: () => import('@/views/generateExceptionReport'),
-        meta: {
-          title: '生成外部异常报告',
-          icon: 'icon-waibubaogao',
-          icon_size: '21px',
-          size: '21px',
-          singlePage: true,
-          externalMenu: true
-        }
-      },
-      {
         path: '/packagedService',
         name: 'packagedService',
         component: () => import('@/views/packagedService'),
@@ -119,6 +106,19 @@ const routes = [
       title: '记事本详情',
       singlePage: true,
       hideInMenu: true,
+      externalMenu: true
+    }
+  },
+  {
+    path: '/generateExternalExceptionReport',
+    name: 'generateExternalExceptionReport',
+    component: () => import('@/views/generateExceptionReport'),
+    meta: {
+      title: '生成外部异常报告',
+      icon: 'icon-waibubaogao',
+      icon_size: '21px',
+      size: '21px',
+      singlePage: true,
       externalMenu: true
     }
   },
